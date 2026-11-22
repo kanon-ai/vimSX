@@ -1,0 +1,8 @@
+/build/
+/test-output/
+__pycache__/
+*.pyc
+*.dsk
+*.rom
+*.mp4
+*.gif
