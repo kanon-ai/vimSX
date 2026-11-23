@@ -106,6 +106,14 @@ Windowsでは `--sdcc "C:\path\to\sdcc\bin\sdcc.exe"` と指定できます。�
 
 vimSXの独自コード・ドキュメントは [MIT](LICENSE) です。SDCCランタイムの部分はそれぞれの原ライセンス（GPL v2以降＋リンク例外）に従います。MSX、Vimなどの名称は互換性・由来の説明に使用しており、各プロジェクト・権利者による公式製品や承認を示しません。
 
+## 免責・利用上の注意
+
+本ソフトウェアは、MITライセンスに基づき「現状のまま」提供します。動作の正確性、特定目的への適合性、互換性、データの完全性などについて保証しません。適用法令で認められる範囲で、作者・著作権者は、本ソフトウェアの使用等に起因する請求、損害その他の責任を負いません。正式な条件は [LICENSE](LICENSE) の英文を参照してください。この説明はMITの利用許諾に追加の制限を設けるものではありません。
+
+本版は開発版です。実機・Nextorの各構成では未検証で、エミュレータでの検証結果はすべての環境での動作や速度を保証しません。重要な文書やソースは別途バックアップを取り、コピーで動作確認してください。保存は直接上書きで、Undo/Redo、自動バックアップ、障害時の復旧機能はありません。データの消失・破損が起きた場合も、本ソフトウェアによる復旧は保証できません。
+
+使用するBIOS、DOS、漢字ROM・ドライバ、MSX-JEなどは、ご自身で適切な利用権限を確保してください。これらの第三者製品は配布物に含めていません。
+
 ## English
 
 The latest update fixes first-character clipping when entering DOS Kanji mode and reduces redundant row-tail clearing in the mapper and legacy display builds. In the mapper MODE80 benchmark, average input processing fell from 129 to 104 ms on Z80 and from 36.5 to 24.7 ms on R800 (emulated time, not physical-hardware measurements). Native VI9IN/VI9EX binaries are unchanged by this optimization. For the mapper's wide Kanji layout, run `:mode80` followed by `:kanji`; width commands currently return to ASCII. Wide Kanji provides 63 half-width text columns, not 80.
@@ -123,3 +131,9 @@ Supported features include normal/insert modes, arrows and hjkl, line/character 
 This is an early development release tested in custom emulators, not validated on physical hardware or across Nextor configurations. It has no undo, atomic save, recovery, regular expressions, splits, Visual mode, plugins or syntax highlighting. Files are interpreted as ASCII/Shift-JIS; CR bytes are stripped on load and LF is written as CRLF. Keep backups. `:q!` discards unsaved changes in both buffers.
 
 Build with Python 3.10+ and SDCC (`python tools/build.py`, or pass `--sdcc`). The release was built with SDCC 4.6.0 #16555. Source is MIT-licensed; linked SDCC runtime code retains its own GPL-with-linking-exception terms. No emulators, ROMs, DOS, MSX-JE or disk images are bundled.
+
+### Disclaimer
+
+The software is provided as-is under the [MIT license](LICENSE), without warranties, including fitness for a particular purpose. To the extent permitted by applicable law, the authors and copyright holders disclaim liability for claims or damages arising from its use or other dealings. The license text contains the governing terms; this summary adds no restrictions to the MIT grant.
+
+This development release is not certified for physical hardware or all Nextor configurations. Emulator results do not guarantee compatibility, performance or data integrity elsewhere. Back up important files and test copies first: saving overwrites files directly, and undo, automatic backups and crash recovery are unavailable. Obtain appropriate rights to the separately required BIOS, DOS, Kanji ROM/driver and MSX-JE.
