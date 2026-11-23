@@ -2,9 +2,7 @@
 
 MSX-DOS2向けの小型Vi風テキストエディタです。通常のマッパRAMを使う版と、V9968の4MiB VRAM・描画機能を使う版の2タイプで、英数字・Shift-JISの文章やソースファイルを編集します。独立した実装であり、Vim本体の移植や完全互換版ではありません。
 
-2026-11-23更新：通常版・従来版のMODE80側の漢字表示、区切り線の幅・位置、漢字画面から終了した際のDOS桁数復元を修正しました。表示幅ぴったりの行の折り返し修正と、V9968の画面切替時の長文データ破損修正も含みます。検証内容は [VALIDATION.md](docs/VALIDATION.md) を参照してください。
-
-追加修正：KANJIへ切り替えた際の先頭文字欠けを修正し、通常版・従来版の不要な行末消去を削減しました。通常版MODE80の連続入力の平均処理時間は、エミュレータ内時間でZ80が129→104ms、R800が36.5→24.7msに短縮しています。実機測定ではありません。詳細は [性能・検証記録](docs/PERFORMANCE-20261123-ja.md) を参照してください。
+初回公開の開発版です。2ファイルの編集とカット＆ペースト、検索・置換、行番号、配色、ASCII／KANJI表示、Z80／R800切り替えに対応します。動作環境・制限・免責を確認のうえ、元ファイルのコピーでお試しください。検証内容は [検証記録](docs/VALIDATION.md) を参照してください。
 
 ## 動作環境と起動
 
@@ -116,9 +114,7 @@ vimSXの独自コード・ドキュメントは [MIT](LICENSE) です。SDCCラ�
 
 ## English
 
-The latest update fixes first-character clipping when entering DOS Kanji mode and reduces redundant row-tail clearing in the mapper and legacy display builds. In the mapper MODE80 benchmark, average input processing fell from 129 to 104 ms on Z80 and from 36.5 to 24.7 ms on R800 (emulated time, not physical-hardware measurements). Native VI9IN/VI9EX binaries are unchanged by this optimization. For the mapper's wide Kanji layout, run `:mode80` followed by `:kanji`; width commands currently return to ASCII. Wide Kanji provides 63 half-width text columns, not 80.
-
-The 2026-11-23 correction fixes extra blank rows after exactly full-width lines and VRAM document corruption across display-mode changes. Replace the previous MODE80 V9968 binaries with this build; see [validation](docs/VALIDATION.md).
+This is the first public development release. For the mapper's wide Kanji layout, run `:mode80` followed by `:kanji`; width commands return to ASCII. Wide Kanji provides 63 half-width text columns, not 80. See the requirements, limitations, disclaimer and [validation report](docs/VALIDATION.md).
 
 vimSX is a small, independently implemented Vi-like editor for MSX-DOS2 on MSX2+ or MSX turbo R. It is not a port of Vim and does not implement full Vi/Vim compatibility.
 
