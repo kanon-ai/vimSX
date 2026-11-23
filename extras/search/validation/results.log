@@ -1,0 +1,101 @@
+GREP.COM verified (5378 bytes)
+FIND.COM verified (4201 bytes)
+BEGIN basic: grep alpha T\ONE.TXT
+EXIT basic 0 EXPECTED 0
+BEGIN number: grep -n alpha T\ONE.TXT
+EXIT number 0 EXPECTED 0
+BEGIN ignore: grep -in beta T\ONE.TXT
+EXIT ignore 0 EXPECTED 0
+BEGIN invert: grep -v alpha T\ONE.TXT
+EXIT invert 0 EXPECTED 0
+BEGIN count: grep -c alpha T\ONE.TXT
+EXIT count 0 EXPECTED 0
+BEGIN nomatch: grep NONE T\ONE.TXT
+EXIT nomatch 1 EXPECTED 1
+BEGIN countzero: grep -c NONE T\ONE.TXT
+EXIT countzero 1 EXPECTED 1
+BEGIN emptyfile: grep "" T\EMPTY.TXT
+EXIT emptyfile 1 EXPECTED 1
+BEGIN emptypattern: grep "" T\ONE.TXT
+EXIT emptypattern 0 EXPECTED 0
+BEGIN literal: grep a.b T\TWO.TXT
+EXIT literal 0 EXPECTED 0
+BEGIN metachars: grep "[x]*" T\TWO.TXT
+EXIT metachars 0 EXPECTED 0
+BEGIN spaces: grep "alpha beta" T\ONE.TXT
+EXIT spaces 0 EXPECTED 0
+BEGIN multiple: grep alpha T\ONE.TXT T\TWO.TXT
+EXIT multiple 0 EXPECTED 0
+BEGIN wild: grep -l alpha T\*.TXT
+EXIT wild 0 EXPECTED 0
+BEGIN recursive: grep -r TODO T
+EXIT recursive 0 EXPECTED 0
+BEGIN recursivehide: grep -rh TODO T
+EXIT recursivehide 0 EXPECTED 0
+BEGIN recursivecount: grep -rc TODO T
+EXIT recursivecount 0 EXPECTED 0
+BEGIN directory: grep TODO T
+EXIT directory 2 EXPECTED 2
+BEGIN stdin: grep -n beta <T\ONE.TXT
+EXIT stdin 0 EXPECTED 0
+BEGIN redirect: grep alpha T\ONE.TXT >MATCH.OUT
+EXIT redirect 0 EXPECTED 0
+BEGIN boundary: grep NEEDLE E\BOUND.TXT
+EXIT boundary 0 EXPECTED 0
+BEGIN large: grep -c NEEDLE E\LARGE.TXT
+EXIT large 0 EXPECTED 0
+BEGIN limit: grep -c x E\LIMIT.TXT
+EXIT limit 0 EXPECTED 0
+BEGIN overlong: grep x E\LONG.TXT
+EXIT overlong 2 EXPECTED 2
+BEGIN binary: grep NEEDLE E\BINARY.TXT
+EXIT binary 0 EXPECTED 0
+BEGIN japanese: jptest
+EXIT japanese 0 EXPECTED 0
+BEGIN epattern: grep -F -e alpha T\ONE.TXT
+EXIT epattern 0 EXPECTED 0
+BEGIN noargs: grep
+EXIT noargs 2 EXPECTED 2
+BEGIN badoption: grep -z alpha T\ONE.TXT
+EXIT badoption 2 EXPECTED 2
+BEGIN missing: grep alpha T\ABSENT.TXT
+EXIT missing 2 EXPECTED 2
+BEGIN findall: find T
+EXIT findall 0 EXPECTED 0
+BEGIN findname: find T -name "*.txt"
+EXIT findname 0 EXPECTED 0
+BEGIN findtype: find T -type d
+EXIT findtype 0 EXPECTED 0
+BEGIN findfiles: find T -type f
+EXIT findfiles 0 EXPECTED 0
+BEGIN finddepth0: find T -maxdepth 0
+EXIT finddepth0 0 EXPECTED 0
+BEGIN finddepth1: find T -maxdepth 1
+EXIT finddepth1 0 EXPECTED 0
+BEGIN findand: find T -name "*.TXT" -type f -maxdepth 1
+EXIT findand 0 EXPECTED 0
+BEGIN findempty: find T -name ""
+EXIT findempty 0 EXPECTED 0
+BEGIN findquestion: find T -name "?NE.TXT"
+EXIT findquestion 0 EXPECTED 0
+BEGIN findmany: find T\SUB T\SIB -type d
+EXIT findmany 0 EXPECTED 0
+BEGIN findfile: find T\ONE.TXT
+EXIT findfile 0 EXPECTED 0
+BEGIN findbad: find T -maxdepth 33
+EXIT findbad 2 EXPECTED 2
+BEGIN findmissing: find ABSENT
+EXIT findmissing 2 EXPECTED 2
+BEGIN findbadtype: find T -type z
+EXIT findbadtype 2 EXPECTED 2
+BEGIN finddefault: find -name LEAF.C
+EXIT finddefault 0 EXPECTED 0
+BEGIN finddot: find . -maxdepth 0
+EXIT finddot 0 EXPECTED 0
+BEGIN findslash: find T/ -maxdepth 0
+EXIT findslash 0 EXPECTED 0
+BEGIN findtrailmissing: find ABSENT/ -maxdepth 0
+EXIT findtrailmissing 2 EXPECTED 2
+BEGIN continue: grep alpha T\ABSENT.TXT T\ONE.TXT
+EXIT continue 2 EXPECTED 2
+DONE

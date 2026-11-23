@@ -95,6 +95,12 @@ MSX-DOS2で `ls`・`ls -l`・`ls -w` を使える [LSコマンド](extras/ls/REA
 
 [LS.COM](extras/ls/LS.COM) をご自身のDOS2ディスクへコピーしてお試しください。GNU `ls` の完全互換ではありません。趣味・実験用の無保証のソフトウェアです。[使い方・検証範囲・免責](extras/ls/README.md)を確認してください。
 
+## おまけ：GREP / FINDでLinuxターミナル気分
+
+固定文字列検索とディレクトリ再帰に対応した [GREP.COM / FIND.COM](extras/search/README.md) もあります。**Linuxターミナルの気分を味わうジョーク／お遊び寄りの実験ツールで、実用性も安全性も不確定です。** 実務用・重要データ用には扱わず、破棄してよいコピーやエミュレーターで遊んでください。
+
+GNU版の完全互換ではありません。openMSXの特定のDOS2環境で49ケースを確認しましたが、実機や他環境での動作・安全性は保証しません。[使い方・制限・免責](extras/search/README.md)と[検証範囲](extras/search/VALIDATION.md)を確認してください。
+
 ## ビルド
 
 Python 3.10以降とZ80対応SDCCを用意してください。検証済みは **SDCC 4.6.0 #16555** です。

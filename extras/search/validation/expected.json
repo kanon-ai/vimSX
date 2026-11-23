@@ -1,0 +1,443 @@
+[
+  {
+    "name": "basic",
+    "cmd": "grep alpha T\\ONE.TXT",
+    "code": 0,
+    "out": "alpha\r\nalpha beta\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "number",
+    "cmd": "grep -n alpha T\\ONE.TXT",
+    "code": 0,
+    "out": "1:alpha\r\n3:alpha beta\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "ignore",
+    "cmd": "grep -in beta T\\ONE.TXT",
+    "code": 0,
+    "out": "2:Beta\r\n3:alpha beta\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "invert",
+    "cmd": "grep -v alpha T\\ONE.TXT",
+    "code": 0,
+    "out": "Beta\r\n\r\nlast\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "count",
+    "cmd": "grep -c alpha T\\ONE.TXT",
+    "code": 0,
+    "out": "2\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "nomatch",
+    "cmd": "grep NONE T\\ONE.TXT",
+    "code": 1,
+    "out": "",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "countzero",
+    "cmd": "grep -c NONE T\\ONE.TXT",
+    "code": 1,
+    "out": "0\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "emptyfile",
+    "cmd": "grep \"\" T\\EMPTY.TXT",
+    "code": 1,
+    "out": "",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "emptypattern",
+    "cmd": "grep \"\" T\\ONE.TXT",
+    "code": 0,
+    "out": "alpha\r\nBeta\r\nalpha beta\r\n\r\nlast\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "literal",
+    "cmd": "grep a.b T\\TWO.TXT",
+    "code": 0,
+    "out": "literal a.b\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "metachars",
+    "cmd": "grep \"[x]*\" T\\TWO.TXT",
+    "code": 0,
+    "out": "[x]*\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "spaces",
+    "cmd": "grep \"alpha beta\" T\\ONE.TXT",
+    "code": 0,
+    "out": "alpha beta\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "multiple",
+    "cmd": "grep alpha T\\ONE.TXT T\\TWO.TXT",
+    "code": 0,
+    "out": "T\\ONE.TXT:alpha\r\nT\\ONE.TXT:alpha beta\r\nT\\TWO.TXT:alpha\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "wild",
+    "cmd": "grep -l alpha T\\*.TXT",
+    "code": 0,
+    "out": "T\\ONE.TXT\r\nT\\TWO.TXT\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "recursive",
+    "cmd": "grep -r TODO T",
+    "code": 0,
+    "out": "T\\SUB\\CHILD.TXT:TODO child\r\nT\\SUB\\DEEP\\LEAF.C:TODO leaf\r\nT\\SUB\\AFTER.TXT:TODO after\r\nT\\SIB\\OTHER.TXT:TODO sibling\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "recursivehide",
+    "cmd": "grep -rh TODO T",
+    "code": 0,
+    "out": "TODO child\r\nTODO leaf\r\nTODO after\r\nTODO sibling\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "recursivecount",
+    "cmd": "grep -rc TODO T",
+    "code": 0,
+    "out": "T\\ONE.TXT:0\r\nT\\TWO.TXT:0\r\nT\\EMPTY.TXT:0\r\nT\\NODOT:0\r\nT\\SUB\\CHILD.TXT:1\r\nT\\SUB\\DEEP\\LEAF.C:1\r\nT\\SUB\\AFTER.TXT:1\r\nT\\SIB\\OTHER.TXT:1\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "directory",
+    "cmd": "grep TODO T",
+    "code": 2,
+    "out": "",
+    "contains": "directory requires -r",
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "stdin",
+    "cmd": "grep -n beta <T\\ONE.TXT",
+    "code": 0,
+    "out": "3:alpha beta\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "redirect",
+    "cmd": "grep alpha T\\ONE.TXT >MATCH.OUT",
+    "code": 0,
+    "out": "alpha\r\nalpha beta\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "boundary",
+    "cmd": "grep NEEDLE E\\BOUND.TXT",
+    "code": 0,
+    "out": "6161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161614e4545444c450d0a",
+    "contains": null,
+    "unordered": false,
+    "binary": true
+  },
+  {
+    "name": "large",
+    "cmd": "grep -c NEEDLE E\\LARGE.TXT",
+    "code": 0,
+    "out": "2500\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "limit",
+    "cmd": "grep -c x E\\LIMIT.TXT",
+    "code": 0,
+    "out": "1\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "overlong",
+    "cmd": "grep x E\\LONG.TXT",
+    "code": 2,
+    "out": "",
+    "contains": "line exceeds 8192 bytes",
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "binary",
+    "cmd": "grep NEEDLE E\\BINARY.TXT",
+    "code": 0,
+    "out": "41004e4545444c450d0a",
+    "contains": null,
+    "unordered": false,
+    "binary": true
+  },
+  {
+    "name": "japanese",
+    "cmd": "jptest",
+    "code": 0,
+    "out": "313a93fa967b8cea82c582b70d0a333a93fa967b8cea0d0a",
+    "contains": null,
+    "unordered": false,
+    "binary": true
+  },
+  {
+    "name": "epattern",
+    "cmd": "grep -F -e alpha T\\ONE.TXT",
+    "code": 0,
+    "out": "alpha\r\nalpha beta\r\n",
+    "contains": null,
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "noargs",
+    "cmd": "grep",
+    "code": 2,
+    "out": "",
+    "contains": "pattern required",
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "badoption",
+    "cmd": "grep -z alpha T\\ONE.TXT",
+    "code": 2,
+    "out": "",
+    "contains": "unknown option",
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "missing",
+    "cmd": "grep alpha T\\ABSENT.TXT",
+    "code": 2,
+    "out": "",
+    "contains": "DOS error",
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "findall",
+    "cmd": "find T",
+    "code": 0,
+    "out": "T\r\nT\\ONE.TXT\r\nT\\TWO.TXT\r\nT\\EMPTY.TXT\r\nT\\NODOT\r\nT\\SUB\r\nT\\SUB\\CHILD.TXT\r\nT\\SUB\\AFTER.TXT\r\nT\\SUB\\DEEP\r\nT\\SUB\\DEEP\\LEAF.C\r\nT\\SIB\r\nT\\SIB\\OTHER.TXT\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findname",
+    "cmd": "find T -name \"*.txt\"",
+    "code": 0,
+    "out": "T\\ONE.TXT\r\nT\\TWO.TXT\r\nT\\EMPTY.TXT\r\nT\\SUB\\CHILD.TXT\r\nT\\SUB\\AFTER.TXT\r\nT\\SIB\\OTHER.TXT\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findtype",
+    "cmd": "find T -type d",
+    "code": 0,
+    "out": "T\r\nT\\SUB\r\nT\\SUB\\DEEP\r\nT\\SIB\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findfiles",
+    "cmd": "find T -type f",
+    "code": 0,
+    "out": "T\\ONE.TXT\r\nT\\TWO.TXT\r\nT\\EMPTY.TXT\r\nT\\NODOT\r\nT\\SUB\\CHILD.TXT\r\nT\\SUB\\AFTER.TXT\r\nT\\SUB\\DEEP\\LEAF.C\r\nT\\SIB\\OTHER.TXT\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "finddepth0",
+    "cmd": "find T -maxdepth 0",
+    "code": 0,
+    "out": "T\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "finddepth1",
+    "cmd": "find T -maxdepth 1",
+    "code": 0,
+    "out": "T\r\nT\\ONE.TXT\r\nT\\TWO.TXT\r\nT\\EMPTY.TXT\r\nT\\NODOT\r\nT\\SUB\r\nT\\SIB\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findand",
+    "cmd": "find T -name \"*.TXT\" -type f -maxdepth 1",
+    "code": 0,
+    "out": "T\\ONE.TXT\r\nT\\TWO.TXT\r\nT\\EMPTY.TXT\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findempty",
+    "cmd": "find T -name \"\"",
+    "code": 0,
+    "out": "",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findquestion",
+    "cmd": "find T -name \"?NE.TXT\"",
+    "code": 0,
+    "out": "T\\ONE.TXT\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findmany",
+    "cmd": "find T\\SUB T\\SIB -type d",
+    "code": 0,
+    "out": "T\\SUB\r\nT\\SUB\\DEEP\r\nT\\SIB\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findfile",
+    "cmd": "find T\\ONE.TXT",
+    "code": 0,
+    "out": "T\\ONE.TXT\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findbad",
+    "cmd": "find T -maxdepth 33",
+    "code": 2,
+    "out": "",
+    "contains": "-maxdepth needs",
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "findmissing",
+    "cmd": "find ABSENT",
+    "code": 2,
+    "out": "",
+    "contains": "DOS error",
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "findbadtype",
+    "cmd": "find T -type z",
+    "code": 2,
+    "out": "",
+    "contains": "-type must",
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "finddefault",
+    "cmd": "find -name LEAF.C",
+    "code": 0,
+    "out": ".\\T\\SUB\\DEEP\\LEAF.C\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "finddot",
+    "cmd": "find . -maxdepth 0",
+    "code": 0,
+    "out": ".\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findslash",
+    "cmd": "find T/ -maxdepth 0",
+    "code": 0,
+    "out": "T\r\n",
+    "contains": null,
+    "unordered": true,
+    "binary": false
+  },
+  {
+    "name": "findtrailmissing",
+    "cmd": "find ABSENT/ -maxdepth 0",
+    "code": 2,
+    "out": "",
+    "contains": "DOS error",
+    "unordered": false,
+    "binary": false
+  },
+  {
+    "name": "continue",
+    "cmd": "grep alpha T\\ABSENT.TXT T\\ONE.TXT",
+    "code": 2,
+    "out": "T\\ONE.TXT:alpha\r\nT\\ONE.TXT:alpha beta\r\n",
+    "contains": "DOS error",
+    "unordered": false,
+    "binary": false
+  }
+]
