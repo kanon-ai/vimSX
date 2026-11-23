@@ -1,0 +1,6 @@
+/build/
+/tests/runner.exe
+/tests/fixture.txt
+/tests/stdout.txt
+/tests/stderr.txt
+/tests/__pycache__/
