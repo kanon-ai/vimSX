@@ -1,5 +1,6 @@
 """Compare incremental graphics edits with a forced full repaint in VRAM."""
 from pathlib import Path
+from binary_layout import data_base
 import argparse, hashlib, json, os, re, subprocess
 
 p=argparse.ArgumentParser(description=__doc__)
@@ -17,7 +18,7 @@ for mode in a.variants:
     listing=(root/'build'/(mode+'.lst')).read_text()
     def address(name,base):
         return int(re.search(r'([0-9A-F]{8})\s+\d+ _'+name+':',listing)[1],16)+base
-    key=address('key',0x103); repaint=address('repaint',0x6000)
+    key=address('key',0x103); repaint=address('repaint',data_base(root,mode))
     signature=com.read_bytes()[key-0x100:key-0x100+12].hex()
     s=['set renderer none','set throttle off','set power on',
        'catch {diskmanipulator delete diska AUTOEXEC.BAT}','set tailPhase 0','set tailPath {}']

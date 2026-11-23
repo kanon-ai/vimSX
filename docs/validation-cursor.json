@@ -1,0 +1,173 @@
+{
+  "binaries": {
+    "MAP": "6e651d3b4b797183f2019587ce93b1ee336aacfc8aa0313b385f37fcaa025103",
+    "INT": "7ef96bec79ae57e66f1bf06b09262723ca33379de1a1b6aa46f80d4223de2024",
+    "EXT": "fc5b5c8ebefbbea5028667229dcdd02e83caf8980c0f5ebc49e2e61199da748f",
+    "9IN": "1d93facd25b356391ed16dfa9ad603bb13ab661ba66615230f39305e5501423f",
+    "9EX": "bc23426d419726118af84b16eb61a640c11c7776867d83fd1e9edc01df5c3d8c"
+  },
+  "emulator": "Hesoten/blueMSX-plus v3.2.0-alpha official x64",
+  "regression": [
+    {
+      "exact_width_next_row_visible": true,
+      "variant": "MAP",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "6e651d3b4b797183f2019587ce93b1ee336aacfc8aa0313b385f37fcaa025103"
+    },
+    {
+      "exact_width_next_row_visible": true,
+      "variant": "INT",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "7ef96bec79ae57e66f1bf06b09262723ca33379de1a1b6aa46f80d4223de2024"
+    },
+    {
+      "exact_width_next_row_visible": true,
+      "variant": "EXT",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "fc5b5c8ebefbbea5028667229dcdd02e83caf8980c0f5ebc49e2e61199da748f"
+    },
+    {
+      "exact_width_next_row_visible": true,
+      "variant": "9IN",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "1d93facd25b356391ed16dfa9ad603bb13ab661ba66615230f39305e5501423f"
+    },
+    {
+      "exact_width_next_row_visible": true,
+      "variant": "9EX",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "bc23426d419726118af84b16eb61a640c11c7776867d83fd1e9edc01df5c3d8c"
+    }
+  ],
+  "z80_edit_regression": [
+    {
+      "z80_fullwidth_backspace_delete_and_insert": true,
+      "edited_pixels_match_full_repaint": true,
+      "variant": "MAP",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "6e651d3b4b797183f2019587ce93b1ee336aacfc8aa0313b385f37fcaa025103"
+    },
+    {
+      "z80_fullwidth_backspace_delete_and_insert": true,
+      "edited_pixels_match_full_repaint": true,
+      "variant": "INT",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "7ef96bec79ae57e66f1bf06b09262723ca33379de1a1b6aa46f80d4223de2024"
+    },
+    {
+      "z80_fullwidth_backspace_delete_and_insert": true,
+      "edited_pixels_match_full_repaint": true,
+      "variant": "EXT",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "fc5b5c8ebefbbea5028667229dcdd02e83caf8980c0f5ebc49e2e61199da748f"
+    },
+    {
+      "z80_fullwidth_backspace_delete_and_insert": true,
+      "edited_pixels_match_full_repaint": true,
+      "variant": "9IN",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "1d93facd25b356391ed16dfa9ad603bb13ab661ba66615230f39305e5501423f"
+    },
+    {
+      "z80_fullwidth_backspace_delete_and_insert": true,
+      "edited_pixels_match_full_repaint": true,
+      "variant": "9EX",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "bc23426d419726118af84b16eb61a640c11c7776867d83fd1e9edc01df5c3d8c"
+    }
+  ],
+  "ascii_cursor": [
+    {
+      "variant": "MAP",
+      "ascii_double_width_cursor": true,
+      "restores_ima_exactly": true,
+      "rom_glyph_bytes_checked": 480
+    },
+    {
+      "variant": "INT",
+      "ascii_double_width_cursor": true,
+      "restores_ima_exactly": true,
+      "rom_glyph_bytes_checked": 480
+    },
+    {
+      "variant": "EXT",
+      "ascii_double_width_cursor": true,
+      "restores_ima_exactly": true,
+      "rom_glyph_bytes_checked": 480
+    },
+    {
+      "variant": "9IN",
+      "ascii_double_width_cursor": true,
+      "restores_ima_exactly": true,
+      "rom_glyph_bytes_checked": 480
+    },
+    {
+      "variant": "9EX",
+      "ascii_double_width_cursor": true,
+      "restores_ima_exactly": true,
+      "rom_glyph_bytes_checked": 480
+    }
+  ],
+  "native_kanji_cursor": [
+    {
+      "variant": "9IN",
+      "rom_bytes_checked": 1280,
+      "fullwidth_block": true,
+      "foreground_background_only": true,
+      "restores_exactly": true
+    },
+    {
+      "variant": "9EX",
+      "rom_bytes_checked": 1280,
+      "fullwidth_block": true,
+      "foreground_background_only": true,
+      "restores_exactly": true
+    }
+  ],
+  "rtl_address_comparison": {
+    "rtl_repo": "hra1129/V9968_Cartridge",
+    "rtl_commit": "453d5f32b0cad874e7b9d4f885fae5f183afe024",
+    "blue_tag": "v3.2.0-alpha",
+    "screen7_fil_address_cases": 33554432,
+    "matching": true,
+    "method": "Independent evaluation of source address equations; not full RTL simulation",
+    "scope": [
+      "SCREEN7 FIL address generation without horizontal/vertical scroll",
+      "R20 bit5 FIL selection",
+      "R28/R29/R30 bank selector definitions reviewed"
+    ],
+    "not_verified": [
+      "cycle timing",
+      "all commands",
+      "Geo3D",
+      "all screen modes",
+      "full formal equivalence"
+    ]
+  },
+  "limits": [
+    "No physical hardware verification",
+    "No full RTL equivalence claim",
+    "No openMSX behavioral comparison in this validation",
+    "Large-file follow-up test not completed; not counted as a pass"
+  ]
+}

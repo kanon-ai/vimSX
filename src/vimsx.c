@@ -72,7 +72,10 @@ __sfr __at(0x98) videoData;
 __sfr __at(0x99) videoCtrl;
 #endif
 static u8 graphics,gx,gy,escape,foreground,background,bodyRows,gutter;
-static u8 font[2048],cursorPixels[4],cursorVisible;
+static u8 font[2048],cursorVisible;
+static u8 cursorPixels[128],cursorBytes,cursorRows,cursorBlock;
+static u8 at(Pos p);
+static u8 lead(u8 c);
 #ifdef NATIVE_V9968
 #define CELL_W (kanji?8:6)
 #define CELL_H (kanji?16:8)
@@ -203,13 +206,22 @@ static Pos cellAddress(void){
  return rowAddress(y)+x+(leftMargin>>1);
 }
 static void caretLineCore(u8 show) {
- u8 i;
+ u8 x,y,i=0,n,value,mask;Pos address;
  if(show){
-  cursorAddr=cellAddress()+(CELL_H-1)*videoStride;
-  videoAddress(cursorAddr,0);for(i=0;i<CELL_W/2;i++)cursorPixels[i]=videoData;
+  cursorAddr=cellAddress();cursorRows=CELL_H;
+  cursorBlock=!ins && gy<bodyRows;
+  cursorBytes=cursorBlock?(lead(at(cursor))?CELL_W:CELL_W/2):1;
  }
- videoAddress(cursorAddr,64);
- for(i=0;i<CELL_W/2;i++)videoData=show?(cursorPixels[i]^255):cursorPixels[i];
+ mask=ink^paper;mask=cursorBlock?mask*17:mask<<4;
+ address=cursorAddr;i=0;
+ for(y=0;y<cursorRows;y++,address+=videoStride){
+  if(show){
+   videoAddress(address,0);n=i;
+   for(x=0;x<cursorBytes;x++)cursorPixels[n++]=videoData;
+  }
+  videoAddress(address,64);
+  for(x=0;x<cursorBytes;x++){value=cursorPixels[i++];videoData=show?value^mask:value;}
+ }
  videoCtrl=0;videoCtrl=0x8e;cursorVisible=show;
 }
 static void caretLine(u8 show) __naked {

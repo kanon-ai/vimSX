@@ -1,3 +1,14 @@
+# Cursor validation — 2026-11-23
+
+All five builds were tested on the official BlueMSX+ v3.2.0-alpha x64 package.
+ASCII double-width cursor pixels and exact restoration match the ROM-derived glyphs.
+The native KANJI cursor also matches both full-width cells and restores all pixels.
+Mode switches, colors, line numbers, editing, byte-exact saves and DOS return passed.
+See `CURSOR-ja.md` and `validation-cursor.json` for scope and final binary hashes.
+Manual display selection and document encoding are unchanged.
+No emulator or RTL patch was needed for this cursor defect.
+The records below describe earlier builds, identified by their original hashes.
+
 ## 2026-11-23 incremental row-tail optimization
 
 MAP/INT/EXT now skip redundant blank-tail clearing and limit ASCII deletion

@@ -2,7 +2,7 @@
 
 MSX-DOS2向けの小型Vi風テキストエディタです。通常のマッパRAMを使う版と、V9968の4MiB VRAM・描画機能を使う版の2タイプで、英数字・Shift-JISの文章やソースファイルを編集します。独立した実装であり、Vim本体の移植や完全互換版ではありません。
 
-初回公開の開発版です。2ファイルの編集とカット＆ペースト、検索・置換、行番号、配色、ASCII／KANJI表示、Z80／R800切り替えに対応します。動作環境・制限・免責を確認のうえ、元ファイルのコピーでお試しください。検証内容は [検証記録](docs/VALIDATION.md) を参照してください。
+開発版です。2ファイルの編集とカット＆ペースト、検索・置換、行番号、配色、ASCII／KANJI表示、Z80／R800切り替えに対応します。動作環境・制限・免責を確認のうえ、元ファイルのコピーでお試しください。検証内容は [検証記録](docs/VALIDATION.md) を参照してください。
 
 ## 動作環境と起動
 
@@ -10,7 +10,7 @@ MSX-DOS2向けの小型Vi風テキストエディタです。通常のマッパR
 - 起動時にBIOSの機種情報を確認します。turbo RのみR800 DRAMモードへ切り替え、終了時に元のCPU設定へ戻します。非turbo RはZ80のまま動作し、R800用BIOSを呼びません。
 - MSX-DOS2環境。通常版はV9958を使用し、V9968を必要としません。V9968版には4MiB VRAM拡張が必要です。
 - 日本語表示には漢字ROM、通常版のKANJI画面には漢字ドライバ、日本語変換には適切に導入したMSX-JEが必要です。
-- 検証はカスタムBlueMSX+ / openMSX環境で実施しました。実機およびNextorの各構成での動作は未検証です。
+- 今回のカーソル修正は公式BlueMSX+ v3.2.0-alphaで5種類を検証しました。過去の検証環境と結果は検証記録に区別して掲載しています。実機およびNextorの各構成での動作は未検証です。
 
 `bin` のCOMファイルを、ご自身のDOSディスクへコピーして実行してください。
 
@@ -31,6 +31,8 @@ VI9EX NOTE.TXT
 V9968版のKANJI画面では、半角英数字・記号に専用の7×12ドット字体（8×16セル）を使います。外付け版は終了時に編集画面を消し、DOS操作用に本体VDP側を選択する案内を表示します。映像出力の自動切替は行いません。
 
 配布物にエミュレータ、BIOS、DOS、MSX-JE、ディスクイメージ、フォントROMは含みません。ASCIIフォントは実行環境のBIOSから読み取ります。
+
+グラフィック表示のNORMALカーソルは文字色と背景色を交換し、全角文字はASCII表示でも2セル幅を使います。INSERT・コマンド入力は縦線です。ASCII／KANJIおよび40桁／80桁の手動切り替え仕様は変えていません。[カーソルの検証とRTL照合範囲](docs/CURSOR-ja.md)を参照してください。
 
 ## 基本操作
 
@@ -114,7 +116,7 @@ vimSXの独自コード・ドキュメントは [MIT](LICENSE) です。SDCCラ�
 
 ## English
 
-This is the first public development release. For the mapper's wide Kanji layout, run `:mode80` followed by `:kanji`; width commands return to ASCII. Wide Kanji provides 63 half-width text columns, not 80. See the requirements, limitations, disclaimer and [validation report](docs/VALIDATION.md).
+This is a development release. For the mapper's wide Kanji layout, run `:mode80` followed by `:kanji`; width commands return to ASCII. Wide Kanji provides 63 half-width text columns, not 80. See the requirements, limitations, disclaimer and [validation report](docs/VALIDATION.md).
 
 vimSX is a small, independently implemented Vi-like editor for MSX-DOS2 on MSX2+ or MSX turbo R. It is not a port of Vim and does not implement full Vi/Vim compatibility.
 

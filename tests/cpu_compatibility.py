@@ -4,6 +4,7 @@ Needs the custom openMSX runtime, separately supplied ROMs, a 720KiB DOS2/Kanji
 boot disk, Pillow, and build/*.lst from tools/build.py. No ROMs are downloaded.
 """
 from pathlib import Path
+from binary_layout import data_base
 import argparse
 import json
 import hashlib
@@ -88,7 +89,7 @@ for machine in args.machines:
         if mode == '9EX':
             script += ['after time 1 {set videosource V9968}']
         if mode in ('MAP','9IN','9EX'):
-            count_address=int(re.search(r'([0-9A-F]{8})\s+\d+ _mapperCount:',listing)[1],16)+0x6000
+            count_address=int(re.search(r'([0-9A-F]{8})\s+\d+ _mapperCount:',listing)[1],16)+data_base(root,mode)
             script += ['after time 47 {set f [open {'+(w/'mapper-count.txt').as_posix()+'} w];puts $f [debug read memory '+str(count_address)+'];close $f}']
         if machine == 'Panasonic_FS-A1F':
             # Hold DEL during boot to skip the built-in Cockpit application.

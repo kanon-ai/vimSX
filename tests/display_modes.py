@@ -4,6 +4,7 @@ Requires the same separately supplied runtime and profiles as the CPU tests.
 Screenshots and memory observations are retained for visual review.
 """
 from pathlib import Path
+from binary_layout import data_base
 import argparse, hashlib, json, os, re, subprocess
 
 ap = argparse.ArgumentParser(description=__doc__)
@@ -31,7 +32,7 @@ for mode in args.variants:
   com = root/'bin'/f'VI{mode}.COM'
   listing = (root/'build'/f'{mode}.lst').read_text()
   names = ['width','bodyRows','ascii80','kanji','videoStride','screenHeight']
-  addr = {n: int(re.search(r'([0-9A-F]{8})\s+\d+ _'+n+':', listing)[1],16)+0x6000 for n in names}
+  addr = {n: int(re.search(r'([0-9A-F]{8})\s+\d+ _'+n+':', listing)[1],16)+data_base(root,mode) for n in names}
   script = ['set renderer SDLGL-PP','set throttle off','set maxframeskip 0','set power on',
             'catch {diskmanipulator delete diska AUTOEXEC.BAT}']
   if mode == '9EX': script += ['after time 1 {set videosource V9968}']

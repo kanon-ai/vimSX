@@ -5,6 +5,7 @@ The rendered-row cache is inspected, screenshots are retained, and saved
 document bytes must remain identical after reversible edits.
 """
 from pathlib import Path
+from binary_layout import data_base
 import argparse, hashlib, json, os, re, subprocess
 
 ap=argparse.ArgumentParser(description=__doc__)
@@ -24,7 +25,7 @@ for mode in args.variants:
  w=args.output.resolve()/mode;w.mkdir(parents=True,exist_ok=args.verify_only)
  profile=args.profile_root.resolve()/f'Panasonic_FS-A1ST-{mode}'/'user'
  listing=(root/'build'/f'{mode}.lst').read_text()
- addr={n:int(re.search(r'([0-9A-F]{8})\s+\d+ _'+n+':',listing)[1],16)+0x6000 for n in ['painted','width','bodyRows','gutter','gx','gy']}
+ addr={n:int(re.search(r'([0-9A-F]{8})\s+\d+ _'+n+':',listing)[1],16)+data_base(root,mode) for n in ['painted','width','bodyRows','gutter','gx','gy']}
  disk=w/'test.dsk'
  if not args.verify_only:disk.write_bytes(args.boot_disk.read_bytes())
  com=root/'bin'/f'VI{mode}.COM'
