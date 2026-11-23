@@ -1,6 +1,233 @@
-# Validation — 2026-11-22
+# Validation — 2026-11-22; CPU compatibility update 2026-11-23
 
 This is emulator evidence, not physical-hardware certification.
+
+## Exact-width wrapping and mode-independent VRAM storage — 2026-11-23
+
+The latest local binaries and results are recorded in `validation-wrap.json`.
+Replace the previous MODE80 V9968 binaries: that build could corrupt documents
+larger than the caches when switching display modes and subsequently saving.
+The correction does not repair files already saved with damaged contents.
+
+The renderer now consumes a following newline, or recognizes end of file,
+after an exactly full display row. It retains the next-row insertion caret
+when editing at the right edge. Tests cover full and double-width lines,
+Japanese character boundaries, line numbers, Enter/Backspace, both scroll
+directions, and byte-identical saves in every edition.
+
+Document and clipboard transfers now use one physical odd/even VRAM layout
+regardless of SCREEN 5/7. Non-interleaved modes transfer the two 128-byte
+halves of each cache page separately. The internal version uses the BIOS
+R#0 shadow rather than SCRMOD: the DOS Kanji driver can report SCRMOD=0
+while the VDP actually uses SCREEN 7. External storage is initialized in a
+known non-interleaved mode before loading the first document. Display and
+atlas storage remain below the 256KiB document boundary.
+
+The large-document test saves all 277,980 input bytes unchanged after
+MODE80, KANJI, MODE40, MODE80, KANJI and ASCII transitions, starting from
+both DOS widths. It exceeds the resident/mapper caches and a 256KiB VRAM
+bank. Native tests include the 128KiB Sony HB-F1XV Z80 configuration and
+the 256KiB turbo R configuration. Two-document regression also changes
+modes between 900-line copies, cuts and pastes, and compares both saved files.
+
+BlueMSX+ checks use isolated disks, actual key events, 100% CPU/VDP settings,
+ASCII pixel round trips, save/relaunch/discard, and DOS commands after exit.
+Native KANJI is inspected in both internal and external live windows.
+MSX-JE conversion checks save `今晩は、こんにちは。` as exact Shift-JIS bytes.
+The older openMSX is used for CPU, storage and row-cache checks; its FIL
+image is not evidence of native KANJI visual quality. Emulator binaries and
+ROMs are unchanged. Physical machines and all Nextor setups remain untested.
+
+Performance records are emulator time between key-read entries, including
+key polling. They are not host elapsed time or physical-machine benchmarks.
+The benchmark starts on turbo R in R800 before selecting Z80/R800, so its
+startup number is not a Z80 startup measurement. Long-line Z80 editing still
+has noticeable latency. In the same 80-column native benchmark, Z80 insertion
+was 93.53 ms/key (previously 101.85), and R800 insertion was 20.83 ms/key
+(previously 23.03). These are results for that workload, not general speedup
+ratios. The legacy software renderer needs longer to drain repeated cursor
+moves; the row test waits for completion before checking its result.
+Full Vim compatibility is not claimed.
+
+## MODE40 / MODE80 and native high-resolution KANJI — 2026-11-23
+
+This is a historical checkpoint. `validation-mode80.json` records its COM hashes,
+individual results and emulator-time measurements. Earlier sections below are
+historical checkpoints; their hashes must not be mistaken for this build.
+
+All five editions (MAP, INT, EXT, 9IN, 9EX) were started after DOS `MODE 40`
+and `MODE 80`. Tests checked inherited width, both command spellings, line
+numbers, colors, KANJI/ASCII transitions, reversible insertion/Backspace,
+exact saved bytes, restored DOS state, and a DOS command after exit.
+Native KANJI uses SCREEN 7 with V9968 FIL and the expanded R#2 mask:
+512x424 pixels, 60 half-width columns, 23 text rows. Its glyph atlas is
+outside the displayed image and below the 256KiB document-storage boundary.
+
+BlueMSX+ tests used independent disk/runtime copies and actual key events at
+100% CPU and VDP speed. They checked mode/color/number changes, pixel-exact
+ASCII round trips, save, relaunch, discard, and DOS commands after both exits.
+The actual internal and external Windows displays were visually inspected.
+MSX-JE's `今晩` candidate was inspected in the internal window; confirming
+`今晩は、こんにちは。` produced the exact Shift-JIS file bytes.
+
+Capture limitations are explicitly separated from editor verification:
+BlueMSX+ agent PNG captures of FIL can lack the other interlace field, while
+the live window correctly combines both. The older custom openMSX used for
+automated memory/editing tests does not render FIL correctly. Its tests
+establish editing, storage and return-to-DOS behavior, not FIL visual quality.
+No emulator, ROM or Windows keyboard patch was made.
+
+Regression checks cover two documents, cut/copy/paste, search/replacement,
+unsaved guards, 900-line copies and capacity rejection. Native 128KiB and
+256KiB MSX-JE cases pass. Non-turbo-R Sony HB-F1XV tests verify that R800 BIOS
+calls are not used. The final mapper clear-loop optimization was followed by
+new mode, BlueMSX+, Japanese-input, editing and CPU-compatibility checks;
+its earlier large-copy results are retained under their own binary hashes.
+
+Timing is measured between editor key-read entries in emulator time. It
+includes processing and key polling, and is not a physical-hardware claim.
+The benchmark starts in R800 on turbo R before the selected CPU command, so
+its startup figure must not be presented as a Z80 startup measurement.
+Native 80-column insertion in the benchmark is approximately 23 ms/key on
+R800 and 102 ms/key on Z80; long-line Z80 editing still has noticeable waits.
+Detailed mode/CPU results are retained in the JSON report.
+
+This checkpoint retained the exact-width blank-row defect. Later long-document
+tests also exposed VRAM corruption across display-mode changes. Both are
+superseded by the correction above; the original reports remain as historical
+evidence, not validation of the latest binaries.
+
+## Native KANJI font and external exit correction — 2026-11-23
+
+This correction supersedes the native COM hashes in the earlier two-type
+report. Hashes and results for that checkpoint are in `validation-kanji-fix.json`.
+The MAP binary is unchanged. The emulator executable and ROMs are unchanged.
+
+Native KANJI printable ASCII now uses original 7x12 single-stroke glyphs in
+8x16 cells, generated by `tools/make_ank_font.py`, rather than vertically
+doubling the BIOS 8x8 font. Other BIOS single-byte glyphs are centered at
+their native height. Full-width Japanese ROM glyphs are unchanged.
+
+On external exit, the old editor image is cleared and replaced by an exit
+notice directing DOS interaction to the main VDP. This does not switch the
+host emulator's selected video source or redirect DOS onto external hardware.
+
+Both editions were tested in BlueMSX+ at 100% speed and 100% VDP timing:
+mixed ASCII/Japanese display, numbers, colors, KANJI/ASCII round trips,
+insertion and byte-exact save, `:wq`, relaunch and `:q!`. The ASCII screen
+before/after the mode changes matched pixel-for-pixel. DOS commands after
+both exit paths created marker files, confirming that execution returned
+to DOS. External exit screenshots show the notice instead of stale text.
+
+Additional openMSX checks passed for the 128KiB MSX-JE sentence conversion
+in both editions, and for Shift-JIS/cache/gap/wrap boundaries, full-width
+cut/paste, numbers and mode changes. User launch disks were backed up and
+only the corresponding COM file was replaced; other root files matched
+byte-for-byte. Physical hardware remains unverified.
+
+## Mapper / native V9968 editions — 2026-11-23
+
+The new editions are `VIMAP.COM`, `VI9IN.COM` and `VI9EX.COM`.
+These tests use the existing custom openMSX runtime and user-supplied ROMs
+and DOS2/MSX-JE disk. No emulator or ROM patch was made for the editor.
+
+| Edition / profile | Mapper RAM | Result |
+|---|---:|---|
+| MAP, Sony HB-F1XV, original V9958 | 256KiB | Editing, CPU guard, mode/color changes and exact saves passed |
+| MAP, Panasonic FS-A1ST, original V9958 | 256KiB | Editing, Z80/R800 switching, restoration and exact saves passed |
+| MAP, Sony, two mapper slots | 128+128KiB | Both slots used; 19,600-byte copy and restart passed |
+| MAP, Sony, insufficient RAM | 128KiB | Refused startup, returned to DOS, source file unchanged |
+| Native internal/external, Sony | 128KiB | Both passed; zero extra mapper cache segments allocated |
+| Native internal/external, turbo R | 256KiB | Both passed; one extra mapper cache segment allocated |
+
+MSX-JE conversion tests enter and save `今晩は、こんにちは。`, checking
+the exact Shift-JIS bytes, including the absence of stray toggle-key spaces.
+Native editions are tested at both 128KiB and 256KiB, on internal and external
+video outputs. The mapper edition uses the installed DOS Kanji console.
+Physical MSX keyboard-matrix tests toggle KANA, tap and hold the I key,
+and verify that the saved text consists only of repeated `に`, in both
+ASCII and KANJI modes and on both V9968 video outputs. These do not test
+Windows IME interception or every host keyboard mapping.
+
+Regression tests cover two-file cut/copy/paste, unsaved-file protection,
+literal replacement, full-width glyph cutting/restoration, cache-page and
+gap boundaries, wrapped lines, numbers and mode changes. Text images are
+compared after reversible edits, excluding only the cursor underline and
+status area. Large-copy tests use 900 lines (26,100 disk bytes), on 512KiB
+for MAP and 256KiB for native V9968. Capacity-exceeding repeated paste is
+rejected without changing the saved documents.
+
+At 256KiB, this DOS2/driver combination leaves ten allocatable segments on
+Sony (48KiB per document) and six on turbo R (16KiB per document). Capacity
+therefore depends on free segments, not just installed RAM. An oversized
+file was rejected without modifying its disk contents.
+
+An artificial FS-A1ST configuration reduced to 128KiB did not reach the COM
+entry point. It is **not** counted as a successful minimum-RAM test; the
+128KiB result above is from the DOS2-booting Sony profile. Real turbo R tests
+use its normal 256KiB configuration. Physical hardware and Nextor remain
+unverified. MSX-JE behavior with other engines/dictionaries is not certified.
+
+### Timing
+
+Mean emulated milliseconds between key-read entries, including BIOS input
+delivery, using `tests/benchmark.py`. These are neither host wall-clock
+times nor pure CPU-cycle measurements. Tests run unthrottled to finish
+sooner; reported values use the emulator's machine clock. No video was made.
+All operations execute, without skipping input or editing work.
+
+| Test | Prior VIINT Z80 | New VI9IN Z80 | Prior VIINT R800 | New VI9IN R800 |
+|---|---:|---:|---:|---:|
+| 120-character wrapped-line insertion | 213.6 | 111.8 | 57.6 | 24.0 |
+| Backspace in that long line | 483.2 | 191.7 | 99.8 | 34.5 |
+| Repeated short source-code lines | 524.8 | 88.3 | 101.9 | 19.6 |
+| Vertical movement, including viewport changes | 719.8 | 171.3 | 126.6 | 37.8 |
+
+The native results above include the optional 16KiB mapper cache. On the
+same Sony MSX2+ profile, comparing 128KiB (no cache) with 256KiB (cache),
+long-line insertion changes from 129.0 to 111.3ms, Backspace from 217.5 to
+191.6ms, and short-line input from 93.6 to 88.1ms. This supports retaining
+the optional mapper cache rather than assuming VRAM access is faster.
+Long logical lines and large copies still take noticeable time on Z80.
+
+The new MAP edition measured 133.8/38.1ms for long-line insertion and
+118.8/36.5ms for short-line input (Z80/R800), on the same turbo R benchmark
+profile. Functional MAP tests separately use a stock V9958 with no V9968.
+
+See `validation-types.json` for machine results, saved-byte checks, timings
+and tested binary hashes. Test scripts require separately supplied ROMs
+and a bootable DOS2/MSX-JE disk; none are distributed here.
+
+## Non-turbo-R CPU compatibility — 2026-11-23
+
+The same internal/external COM pair is tested on three real-BIOS profiles:
+
+| Profile | CPU | RAM configuration | Internal / external V9968 |
+|---|---|---|---|
+| Panasonic FS-A1F (MSX2) | Z80 | Mapper expanded to 256KiB, DOS2 cartridge | Both passed |
+| Sony HB-F1XV (MSX2+) | Z80 | Mapper expanded to 256KiB, DOS2 cartridge | Both passed |
+| Panasonic FS-A1ST (turbo R) | Z80 / R800 | Existing turbo R configuration | Both passed |
+
+No BIOS ROM or emulator executable is patched for these tests. The internal
+profile substitutes V9968 for the VDP; the external profile adds V9968 at 88h.
+FS-A1F uses DEL during boot to bypass the built-in Cockpit application.
+
+Tests cover startup, `:z80`, `:r800`, insertion/Backspace, search/replacement,
+Japanese line copying/cutting across two files, ASCII/KANJI, numbers, color,
+save-all and exit, checking both saved files byte-for-byte. Debugger traces
+confirm **zero calls** to the editor's turbo-R CPU wrapper on MSX2/MSX2+.
+The turbo-R trace confirms GETCPU, initial R800 selection, explicit Z80 and
+R800 selection, and restoration on exit. The BIOS generation is read using
+RDSLT from the main-ROM slot, not from DOS's page-0 RAM.
+
+```sh
+python tests/cpu_compatibility.py --runtime /path/to/openmsx-runtime --rom-dir /path/to/systemroms --boot-disk /path/to/boot.dsk --output test-output/cpu
+```
+
+Run `tools/build.py` first: this test uses the generated linker listings for
+breakpoint addresses. ROMs and the boot disk must be supplied separately.
+Standard V9938/V9958 VRAM alone remains unsupported. Stock 64KiB RAM machines,
+physical hardware and arbitrary Nextor configurations are not validated.
 
 ## Scope
 

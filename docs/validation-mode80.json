@@ -1,0 +1,488 @@
+{
+  "date": "2026-11-23",
+  "scope": "DOS width inheritance, ASCII 40/80 commands, native V9968 512x424 KANJI",
+  "binaries": {
+    "VI9EX.COM": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff",
+    "VI9IN.COM": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0",
+    "VIEXT.COM": "363d776a0ed45ac3c7d8007a35871d2b97a60c6f40b19159315126e5e316587a",
+    "VIINT.COM": "994b06bb1730a0cda0b657a6a8b9811d6e7d514b4256520f2a61fe67ed65e7a9",
+    "VIMAP.COM": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb"
+  },
+  "emulator_and_roms_unchanged": true,
+  "physical_hardware_tested": false,
+  "display_modes": [
+    {
+      "variant": "MAP",
+      "initial_columns": 40,
+      "inherit_switch_edit_restore": true,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb"
+    },
+    {
+      "variant": "MAP",
+      "initial_columns": 80,
+      "inherit_switch_edit_restore": true,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb"
+    },
+    {
+      "variant": "INT",
+      "initial_columns": 40,
+      "inherit_switch_edit_restore": true,
+      "sha256": "994b06bb1730a0cda0b657a6a8b9811d6e7d514b4256520f2a61fe67ed65e7a9"
+    },
+    {
+      "variant": "INT",
+      "initial_columns": 80,
+      "inherit_switch_edit_restore": true,
+      "sha256": "994b06bb1730a0cda0b657a6a8b9811d6e7d514b4256520f2a61fe67ed65e7a9"
+    },
+    {
+      "variant": "EXT",
+      "initial_columns": 40,
+      "inherit_switch_edit_restore": true,
+      "sha256": "363d776a0ed45ac3c7d8007a35871d2b97a60c6f40b19159315126e5e316587a"
+    },
+    {
+      "variant": "EXT",
+      "initial_columns": 80,
+      "inherit_switch_edit_restore": true,
+      "sha256": "363d776a0ed45ac3c7d8007a35871d2b97a60c6f40b19159315126e5e316587a"
+    },
+    {
+      "variant": "9IN",
+      "initial_columns": 40,
+      "inherit_switch_edit_restore": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    },
+    {
+      "variant": "9IN",
+      "initial_columns": 80,
+      "inherit_switch_edit_restore": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    },
+    {
+      "variant": "9EX",
+      "initial_columns": 40,
+      "inherit_switch_edit_restore": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff"
+    },
+    {
+      "variant": "9EX",
+      "initial_columns": 80,
+      "inherit_switch_edit_restore": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff"
+    }
+  ],
+  "blue": [
+    {
+      "variant": "MAP",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb"
+    },
+    {
+      "variant": "9IN",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    },
+    {
+      "variant": "9EX",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff"
+    }
+  ],
+  "blue_msxje": [
+    {
+      "variant": "9IN",
+      "msxje_physical_conversion": true,
+      "saved_bytes_match": true,
+      "dos_command_after_wq": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    }
+  ],
+  "ime": [
+    {
+      "variant": "MAP",
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb"
+    },
+    {
+      "variant": "9IN",
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    },
+    {
+      "variant": "9EX",
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff"
+    },
+    {
+      "variant": "9IN",
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    },
+    {
+      "variant": "9EX",
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff"
+    }
+  ],
+  "regression": [
+    {
+      "variant": "MAP",
+      "case": "exchange",
+      "saved_bytes_match": true,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb"
+    },
+    {
+      "variant": "MAP",
+      "case": "new",
+      "saved_bytes_match": true,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb"
+    },
+    {
+      "variant": "9IN",
+      "case": "exchange",
+      "saved_bytes_match": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    },
+    {
+      "variant": "9IN",
+      "case": "new",
+      "saved_bytes_match": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    },
+    {
+      "variant": "9IN",
+      "case": "bulk",
+      "saved_bytes_match": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    },
+    {
+      "variant": "9IN",
+      "case": "capacity",
+      "saved_bytes_match": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0"
+    },
+    {
+      "variant": "9EX",
+      "case": "exchange",
+      "saved_bytes_match": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff"
+    },
+    {
+      "variant": "9EX",
+      "case": "new",
+      "saved_bytes_match": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff"
+    },
+    {
+      "variant": "9EX",
+      "case": "bulk",
+      "saved_bytes_match": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff"
+    },
+    {
+      "variant": "9EX",
+      "case": "capacity",
+      "saved_bytes_match": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff"
+    }
+  ],
+  "mapper_large_copy_before_clear_optimization": [
+    {
+      "variant": "MAP",
+      "case": "bulk",
+      "saved_bytes_match": true,
+      "sha256": "4dc423f0de3e08b12dbdd973caa7107ac6c8b18d21f41dc45819f0dd1caa0dac"
+    },
+    {
+      "variant": "MAP",
+      "case": "capacity",
+      "saved_bytes_match": true,
+      "sha256": "4dc423f0de3e08b12dbdd973caa7107ac6c8b18d21f41dc45819f0dd1caa0dac"
+    }
+  ],
+  "non_turbo_r": [
+    {
+      "machine": "Sony_HB-F1XV",
+      "variant": "MAP",
+      "ram_kb": 256,
+      "cpu_calls": [],
+      "saved_bytes_match": true,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb",
+      "mapper_segments": 10
+    },
+    {
+      "machine": "Sony_HB-F1XV",
+      "variant": "9IN",
+      "ram_kb": 256,
+      "cpu_calls": [],
+      "saved_bytes_match": true,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0",
+      "mapper_segments": 1
+    },
+    {
+      "machine": "Sony_HB-F1XV",
+      "variant": "9EX",
+      "ram_kb": 256,
+      "cpu_calls": [],
+      "saved_bytes_match": true,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff",
+      "mapper_segments": 1
+    }
+  ],
+  "performance": [
+    {
+      "variant": "MAP",
+      "cpu": "z80",
+      "display": "40",
+      "startup_ms": 1200.670615958174,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb",
+      "cpu_mean_ms": 181.63297290577418,
+      "insert_mean_ms": 135.33010203325972,
+      "backspace_mean_ms": 203.4973159996593,
+      "lines_mean_ms": 118.71778052270871,
+      "move_mean_ms": 179.62443739546728,
+      "numbers_mean_ms": 409.82580653872583,
+      "exit_mean_ms": 42.377173635197586
+    },
+    {
+      "variant": "MAP",
+      "cpu": "r800",
+      "display": "40",
+      "startup_ms": 1200.670615958174,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb",
+      "cpu_mean_ms": 61.06222997615637,
+      "insert_mean_ms": 39.29691119499018,
+      "backspace_mean_ms": 50.08696636024972,
+      "lines_mean_ms": 36.561524771557764,
+      "move_mean_ms": 38.047595736631706,
+      "numbers_mean_ms": 91.49811638071328,
+      "exit_mean_ms": 18.82264366001844
+    },
+    {
+      "variant": "MAP",
+      "cpu": "z80",
+      "display": "80",
+      "startup_ms": 1200.670615958174,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb",
+      "cpu_mean_ms": 181.63297290577418,
+      "display_mean_ms": 443.2685578753723,
+      "insert_mean_ms": 135.67479933532806,
+      "backspace_mean_ms": 132.8593438551547,
+      "lines_mean_ms": 137.54238311250563,
+      "move_mean_ms": 180.37549918110156,
+      "numbers_mean_ms": 466.35382429889916,
+      "exit_mean_ms": 67.00060110060235
+    },
+    {
+      "variant": "MAP",
+      "cpu": "r800",
+      "display": "80",
+      "startup_ms": 1200.670615958174,
+      "sha256": "f0a4e2bcec21973d405b2c81d37f3802d6bde3d599906cb87e6002d428852dcb",
+      "cpu_mean_ms": 61.06222997615637,
+      "display_mean_ms": 182.61851366584293,
+      "insert_mean_ms": 36.650434668453485,
+      "backspace_mean_ms": 33.50886774715782,
+      "lines_mean_ms": 37.65016878680158,
+      "move_mean_ms": 38.27283197286923,
+      "numbers_mean_ms": 119.74408293046561,
+      "exit_mean_ms": 31.257790212630237
+    },
+    {
+      "variant": "9IN",
+      "cpu": "z80",
+      "display": "40",
+      "startup_ms": 778.7017623748297,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0",
+      "cpu_mean_ms": 60.72986929903052,
+      "insert_mean_ms": 112.92504291111655,
+      "backspace_mean_ms": 192.4809577753596,
+      "lines_mean_ms": 90.3407912280002,
+      "move_mean_ms": 171.26586336108767,
+      "numbers_mean_ms": 277.1064944473854,
+      "exit_mean_ms": 27.83975803256074
+    },
+    {
+      "variant": "9IN",
+      "cpu": "r800",
+      "display": "40",
+      "startup_ms": 778.7017623748297,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0",
+      "cpu_mean_ms": 23.382161699321575,
+      "insert_mean_ms": 24.21813756305354,
+      "backspace_mean_ms": 36.1166922052945,
+      "lines_mean_ms": 19.707255995339,
+      "move_mean_ms": 37.75498343006215,
+      "numbers_mean_ms": 62.58025344934441,
+      "exit_mean_ms": 15.421559630250195
+    },
+    {
+      "variant": "9IN",
+      "cpu": "z80",
+      "display": "80",
+      "startup_ms": 778.7017623748297,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0",
+      "cpu_mean_ms": 60.72986929903052,
+      "display_mean_ms": 106.29262937049289,
+      "insert_mean_ms": 101.84859475133666,
+      "backspace_mean_ms": 105.9656325035725,
+      "lines_mean_ms": 90.06195987597619,
+      "move_mean_ms": 171.25490016793236,
+      "numbers_mean_ms": 275.6930699292788,
+      "exit_mean_ms": 27.94759296689146
+    },
+    {
+      "variant": "9IN",
+      "cpu": "r800",
+      "display": "80",
+      "startup_ms": 778.7017623748297,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0",
+      "cpu_mean_ms": 23.382161699321575,
+      "display_mean_ms": 47.7483870156683,
+      "insert_mean_ms": 23.03217493049262,
+      "backspace_mean_ms": 27.53614635379655,
+      "lines_mean_ms": 19.7457996088524,
+      "move_mean_ms": 37.768090939234135,
+      "numbers_mean_ms": 62.64284287528159,
+      "exit_mean_ms": 15.22861145760146
+    },
+    {
+      "variant": "9IN",
+      "cpu": "z80",
+      "display": "kanji",
+      "startup_ms": 778.7017623748297,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0",
+      "cpu_mean_ms": 60.72986929903052,
+      "display_mean_ms": 185.33377047322273,
+      "insert_mean_ms": 112.10861106141095,
+      "backspace_mean_ms": 212.08351899473251,
+      "lines_mean_ms": 90.89301508464327,
+      "move_mean_ms": 171.26129536393978,
+      "numbers_mean_ms": 304.67852757822556,
+      "exit_mean_ms": 32.33623267761724
+    },
+    {
+      "variant": "9IN",
+      "cpu": "r800",
+      "display": "kanji",
+      "startup_ms": 778.7017623748297,
+      "sha256": "bbe8d75fe1642f1c16692b2a621e905ef60d7fc5afe238f7489eddf28d328da0",
+      "cpu_mean_ms": 23.382161699321575,
+      "display_mean_ms": 69.18427182385349,
+      "insert_mean_ms": 23.265136576236692,
+      "backspace_mean_ms": 45.411448941136356,
+      "lines_mean_ms": 19.817788759930835,
+      "move_mean_ms": 37.75492680199842,
+      "numbers_mean_ms": 67.12538418523432,
+      "exit_mean_ms": 14.623180692889074
+    },
+    {
+      "variant": "9EX",
+      "cpu": "z80",
+      "display": "40",
+      "startup_ms": 766.571030675685,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff",
+      "cpu_mean_ms": 60.931151864273396,
+      "insert_mean_ms": 113.20048998794101,
+      "backspace_mean_ms": 191.62573734929998,
+      "lines_mean_ms": 90.50589871005046,
+      "move_mean_ms": 171.2551191297793,
+      "numbers_mean_ms": 275.65610061241466,
+      "exit_mean_ms": 27.83975803256074
+    },
+    {
+      "variant": "9EX",
+      "cpu": "r800",
+      "display": "40",
+      "startup_ms": 766.571030675685,
+      "sha256": "19b36fc39ec9ff18c122e83c16465784c057390b5f4d2bb7da06227a5bec36ff",
+      "cpu_mean_ms": 21.402836580254103,
+      "insert_mean_ms": 23.204681734505044,
+      "backspace_mean_ms": 33.6402112559,
+      "lines_mean_ms": 19.58555368711578,
+      "move_mean_ms": 37.800516168576756,
+      "numbers_mean_ms": 53.4450723951417,
+      "exit_mean_ms": 12.718562461616992
+    }
+  ],
+  "visual_review": {
+    "BlueMSX_native_internal_and_external_windows": "KANJI and status rows reviewed on actual Windows display; internal MSX-JE candidate reviewed",
+    "capture_limit": "Agent PNG interlace captures may contain an unfilled alternate field. Old openMSX does not display FIL correctly; its tests establish editing/memory behavior, not FIL visual correctness."
+  },
+  "known_limits": [
+    "Exact-width physical lines can leave an extra blank display row; text bytes are unchanged. Existing wrap behavior is not modified pending user approval.",
+    "Z80 long-line editing remains slower than R800. Timing is emulator time, not hardware certification."
+  ],
+  "link_layout": {
+    "MAP": {
+      "code_end": "0x4be3",
+      "data_end": "0x7abf"
+    },
+    "INT": {
+      "code_end": "0x4443",
+      "data_end": "0x785d"
+    },
+    "EXT": {
+      "code_end": "0x4443",
+      "data_end": "0x785d"
+    },
+    "9IN": {
+      "code_end": "0x5f67",
+      "data_end": "0x7e31"
+    },
+    "9EX": {
+      "code_end": "0x5ff5",
+      "data_end": "0x7e31"
+    }
+  },
+  "disk_updates": [
+    {
+      "launcher": "MAP",
+      "programs": [
+        "VIINT.COM",
+        "VIMAP.COM"
+      ],
+      "other_root_files_unchanged": true
+    },
+    {
+      "launcher": "9IN",
+      "programs": [
+        "VI9IN.COM",
+        "VIINT.COM"
+      ],
+      "other_root_files_unchanged": true
+    },
+    {
+      "launcher": "9EX",
+      "programs": [
+        "VI9EX.COM",
+        "VIINT.COM"
+      ],
+      "other_root_files_unchanged": true
+    },
+    {
+      "launcher": "legacy",
+      "programs": [
+        "VIINT.COM"
+      ],
+      "other_root_files_unchanged": true
+    }
+  ]
+}

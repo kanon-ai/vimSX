@@ -3,9 +3,22 @@
 typedef unsigned char u8;
 typedef unsigned int u16;
 typedef unsigned long Pos;
+#if defined(MAPPER_ONLY) || defined(NATIVE_V9968)
+#define FAST_VIEW
+#endif
 #define BASE 0x40000UL
+#ifdef MAPPER_ONLY
+static Pos storageLimit;
+#define LIMIT storageLimit
+#define CLIP_BASE (storageLimit*2)
+#define FULL_MESSAGE "File exceeds available mapper RAM"
+#define READ_MESSAGE "Cannot read file (or mapper full)"
+#else
 #define LIMIT 0x100000UL
 #define CLIP_BASE 0x200000UL
+#define FULL_MESSAGE "File limit: 1 MiB"
+#define READ_MESSAGE "Cannot read file (or over 1 MiB)"
+#endif
 #ifdef EXTERNAL
 #define PORT 0x88
 #else
@@ -49,12 +62,31 @@ static void dos(void) __naked {
  ret
  __endasm;
 }
-/* Internal display, independent of the document VRAM port. */
+/* The native V9968 build renders on the same chip as document storage. */
+#ifdef NATIVE_V9968
+__sfr __at(PORT) videoData;
+__sfr __at(PORT+1) videoCtrl;
+__sfr __at(PORT+3) videoCommand;
+#else
 __sfr __at(0x98) videoData;
 __sfr __at(0x99) videoCtrl;
+#endif
 static u8 graphics,gx,gy,escape,foreground,background,bodyRows,gutter;
-static u8 font[2048],cursorPixels[3],cursorVisible;
-static u16 cursorAddr;
+static u8 font[2048],cursorPixels[4],cursorVisible;
+#ifdef NATIVE_V9968
+#define CELL_W (kanji?8:6)
+#define CELL_H (kanji?16:8)
+static u8 japaneseKey(void);
+static void jeClose(void);
+static u8 jeInit(void);
+#else
+#define CELL_W 6
+#define CELL_H 8
+#endif
+static Pos cursorAddr;
+static u8 ascii80,wideScreen,leftMargin,initialColumns;
+static u16 videoStride,screenHeight,atlasY;
+static Pos rowAddress(u16 y){Pos a=(Pos)y<<7;return wideScreen?a<<1:a;}
 static void biosScreen(u8 mode) __naked {
  mode;
  __asm
@@ -108,34 +140,76 @@ static void readFont(void) __naked {
  ret
  __endasm;
 }
-static void videoAddress(u16 a,u8 write){
- videoCtrl=a>>14;videoCtrl=0x8e;videoCtrl=a;videoCtrl=((a>>8)&63)|write;
+/* SDCC register ABI: address in HLDE, write flag on the stack.
+   Set the 18-bit VRAM address without a 32-bit shift in the pixel loop. */
+static void videoAddress(Pos a,u8 write) __naked {
+ a;write;
+ __asm
+ ld a,l
+ add a,a
+ add a,a
+ ld b,a
+ ld a,d
+ rlca
+ rlca
+ and #3
+ or b
+ out (_videoCtrl),a
+ ld a,#0x8e
+ out (_videoCtrl),a
+ ld a,e
+ out (_videoCtrl),a
+ pop hl
+ pop bc
+ dec sp
+ ld a,d
+ and #63
+ or c
+ out (_videoCtrl),a
+ jp (hl)
+ __endasm;
 }
 #define FORCLR (*(volatile u8*)0xf3e9)
 #define BAKCLR (*(volatile u8*)0xf3ea)
 #define BDRCLR (*(volatile u8*)0xf3eb)
 static u8 dosInk,dosPaper,dosBorder,ink,paper;
+#ifdef NATIVE_V9968
+#include "v9968_draw.h"
+#endif
 static void applyColors(void) __critical {
  FORCLR=ink;BAKCLR=paper;BDRCLR=paper;
  videoCtrl=paper;videoCtrl=0x87;
 }
 static void clearAsciiPage(void) __critical {
- u16 i;
+#ifdef NATIVE_V9968
+ videoCtrl=paper;videoCtrl=0x87;
+ videoCtrl=(*(u8*)0xffe7)|2;videoCtrl=0x88;
+ nativeFill(0,0,videoStride*2,screenHeight,paper*17);
+ memset(glyphValid,0,sizeof(glyphValid));
+#else
+ u16 i=212u*videoStride;u8 packed=paper*17;
  videoCtrl=paper;videoCtrl=0x87;
  videoCtrl=(*(u8*)0xffe7)|2;videoCtrl=0x88;
  videoAddress(0,64);
- for(i=0;i<212u*128u;i++)videoData=paper*17;
+ while(i--)videoData=packed;
  videoCtrl=0;videoCtrl=0x8e;
+#endif
 }
-static u16 cellAddress(void){return (u16)gy*1024+gx*3+4;}
+static Pos cellAddress(void){
+ u16 y=(u16)gy<<3,x=(u16)gx*3;
+#ifdef NATIVE_V9968
+ if(kanji){y<<=1;x=(u16)gx<<2;}
+#endif
+ return rowAddress(y)+x+(leftMargin>>1);
+}
 static void caretLineCore(u8 show) {
  u8 i;
  if(show){
-  cursorAddr=cellAddress()+896;
-  videoAddress(cursorAddr,0);for(i=0;i<3;i++)cursorPixels[i]=videoData;
+  cursorAddr=cellAddress()+(CELL_H-1)*videoStride;
+  videoAddress(cursorAddr,0);for(i=0;i<CELL_W/2;i++)cursorPixels[i]=videoData;
  }
  videoAddress(cursorAddr,64);
- for(i=0;i<3;i++)videoData=show?(cursorPixels[i]^255):cursorPixels[i];
+ for(i=0;i<CELL_W/2;i++)videoData=show?(cursorPixels[i]^255):cursorPixels[i];
  videoCtrl=0;videoCtrl=0x8e;cursorVisible=show;
 }
 static void caretLine(u8 show) __naked {
@@ -154,22 +228,45 @@ static const u8 digits[10][8]={
  {48,64,128,240,136,136,112,0},{248,8,16,32,64,64,64,0},
  {112,136,136,112,136,136,112,0},{112,136,136,120,8,16,96,0}
 };
+#ifdef NATIVE_V9968
+#include "ank_font.h"
+#endif
 static void drawCharCore(u8 c) {
- u8 y,j,bits,l,r;u16 a=cellAddress();
- for(y=0;y<8;y++,a+=128){
+ u8 y,j,bits,l,r;Pos a=cellAddress();
+#ifdef NATIVE_V9968
+ u8 savedX=gx,savedY=gy,cached=!(gy<bodyRows && gx<gutter && c>='0' && c<='9');
+ if(cached){
+  if(glyphValid[c] && glyphColors[c]==(foreground<<4|background))goto cachedGlyph;
+  gx=c%width;gy=atlasY/CELL_H+c/width;a=cellAddress();
+ }
+#endif
+ for(y=0;y<CELL_H;y++,a+=videoStride){
+#ifdef NATIVE_V9968
+  if(kanji){
+   if(c>=32 && c<=126)bits=y>=2 && y<14?ankFont[c-32][y-2]:0;
+   else bits=y>=4 && y<12?font[(u16)c*8+y-4]:0;
+  }else
+#endif
   bits=font[(u16)c*8+y];
   /* Printable ASCII already fits in five dots plus one spacing dot.
      Preserve its strokes; only condense the wider non-ASCII BIOS glyphs. */
-  if(c<32 || c>126)
+  if(CELL_W==6 && (c<32 || c>126))
    bits=(bits&0xe0)|((bits&0x18)?16:0)|((bits&6)?8:0)|((bits&1)?4:0);
-  if(gy<bodyRows && gx<gutter && c>='0' && c<='9')bits=digits[c-'0'][y];
+  if(CELL_H==8 && gy<bodyRows && gx<gutter && c>='0' && c<='9')bits=digits[c-'0'][y];
   videoAddress(a,64);
-  for(j=0;j<3;j++){
+  for(j=0;j<CELL_W/2;j++){
    l=bits&128?foreground:background;r=bits&64?foreground:background;
    videoData=(l<<4)|r;bits<<=2;
   }
  }
  videoCtrl=0;videoCtrl=0x8e;
+#ifdef NATIVE_V9968
+ if(cached){
+  gx=savedX;gy=savedY;glyphValid[c]=1;glyphColors[c]=foreground<<4|background;
+cachedGlyph:
+  nativeCopy((c%width)*CELL_W+leftMargin,atlasY+(c/width)*CELL_H,gx*CELL_W+leftMargin,gy*CELL_H,CELL_W,CELL_H);
+ }
+#endif
 }
 static void drawChar(u8 c) __naked {
  c;
@@ -187,7 +284,7 @@ __sfr __at(0xdb) kanji2High;
 static u8 firstByte,wideTile[32];
 static void drawWide(u8 trail){
  u8 row,col,i,y,x,pixel,packed=0;
- u16 index,bits,addr=cellAddress();
+ u16 index,bits;Pos addr=cellAddress();
  row=(firstByte<(u8)0xa0?firstByte-0x81:firstByte-0xc1)*2+0x21;
  if(trail>=0x9f){row++;col=trail-0x7e;}else col=trail-(trail<0x7f?0x1f:0x20);
  if(row>=0x50){
@@ -200,14 +297,14 @@ static void drawWide(u8 trail){
   kanjiLow=index&63;kanjiHigh=index>>6;
   for(i=0;i<32;i++)wideTile[i]=kanjiHigh;
  }
- for(y=0;y<8;y++,addr+=128){
-  i=(y&3)*2+(y>=4?16:0);
-  bits=((u16)(wideTile[i]|wideTile[i+1])<<8)|(wideTile[i+8]|wideTile[i+9]);
+ for(y=0;y<CELL_H;y++,addr+=videoStride){
+  if(CELL_H==16){i=(y&7)+(y>=8?16:0);bits=((u16)wideTile[i]<<8)|wideTile[i+8];}
+  else{i=(y&3)*2+(y>=4?16:0);bits=((u16)(wideTile[i]|wideTile[i+1])<<8)|(wideTile[i+8]|wideTile[i+9]);}
   __critical {
    videoAddress(addr,64);
-   for(x=0;x<12;x++){
+   for(x=0;x<CELL_W*2;x++){
     pixel=(bits&0x8000)?foreground:background;bits<<=1;
-    if(x%3==2){if(bits&0x8000)pixel=foreground;bits<<=1;}
+    if(CELL_W==6 && x%3==2){if(bits&0x8000)pixel=foreground;bits<<=1;}
     if(x&1)videoData=packed|pixel;else packed=pixel<<4;
    }
    videoCtrl=0;videoCtrl=0x8e;
@@ -216,57 +313,94 @@ static void drawWide(u8 trail){
 }
 /* Clear the remaining character cells one scanline at a time. */
 static void clearLineTail(void) __critical {
- u8 y,n,count=(40-gx)*3,packed=background*17;
- u16 addr=cellAddress();
- for(y=0;y<8;y++,addr+=128){
+#ifdef NATIVE_V9968
+ if(gx<width)nativeFill(gx*CELL_W+leftMargin,gy*CELL_H,(width-gx)*CELL_W,CELL_H,background*17);
+ gx=width;
+#else
+ u8 y,n,count=(width-gx)*3,packed=background*17;
+ Pos addr=cellAddress();
+ for(y=0;y<8;y++,addr+=videoStride){
   videoAddress(addr,64);
   for(n=0;n<count;n++)videoData=packed;
  }
- videoCtrl=0;videoCtrl=0x8e;gx=40;
+ videoCtrl=0;videoCtrl=0x8e;gx=width;
+#endif
 }
 static u8 lead(u8 c);
 static void put(u8 c){
  if(!graphics){arg=c;fn=2;dos();return;}
  if(cursorVisible)caretLine(0);
- if(escape){escape=0;if(c=='K' && gx<40)clearLineTail();return;}
+ if(escape){escape=0;if(c=='K' && gx<width)clearLineTail();return;}
  if(c==27){firstByte=0;escape=1;return;}
- if(firstByte){if(gx+2<=40){drawWide(c);gx+=2;}firstByte=0;return;}
+ if(firstByte){if(gx+2<=width){drawWide(c);gx+=2;}firstByte=0;return;}
  if(lead(c)){firstByte=c;return;}
  if(c==8){if(gx)gx--;return;}
- if(c>=32&&gx<40){drawChar(c);gx++;}
+ if(c>=32&&gx<width){drawChar(c);gx++;}
 }
 static void str(const char *s){while(*s)put(*s++);}
 static u8 commandKeys,pending;
-static u8 key(void){
-
+static u8 rawKana(u8 c){
  static const u8 hiragana[]={130,240,130,159,130,161,130,163,130,165,130,167,130,225,130,227,130,229,130,193,129,91,130,160,130,162,130,164,130,166,130,168,130,169,130,171,130,173,130,175,130,177,130,179,130,181,130,183,130,185,130,187,130,189,130,191,130,194,130,196,130,198,130,200,130,201,130,202,130,203,130,204,130,205,130,208,130,211,130,214,130,217,130,220,130,221,130,222,130,223,130,224,130,226,130,228,130,230,130,231,130,232,130,233,130,234,130,235,130,237,130,241};
- u8 c,index;
- if(pending){c=pending;pending=0;return c;}
- if(commandKeys){do{*(volatile u8*)0xfcac=0;fn=6;arg=255;dos();}while(!err);return err;}
- if(!graphics){fn=7;dos();return err;}
- do{fn=6;arg=255;dos();}while(!err);
- c=err;
+ u8 index;
  if((c>=0x86 && c<=0x9f)||(c>=0xe0 && c<=0xfd)){
   index=c<0xa0?c-0x86:c-0xe0+26;
   pending=hiragana[index*2+1];return hiragana[index*2];
  }
  return c;
 }
+static u8 key(void){
+
+ u8 c;
+ if(pending){c=pending;pending=0;return c;}
+ if(commandKeys){do{*(volatile u8*)0xfcac=0;fn=6;arg=255;dos();}while(!err);return err;}
+#ifdef NATIVE_V9968
+ if(kanji)return japaneseKey();
+#endif
+ if(!graphics){fn=7;dos();return err;}
+ do{fn=6;arg=255;dos();}while(!err);
+ return rawKana(err);
+}
 static void locate(u8 x,u8 y){
  if(graphics){if(cursorVisible)caretLine(0);firstByte=0;gx=x;gy=y;return;}
  put(27);put('Y');put(32+y);put(32+x);
 }
 static void reg(u8 r,u8 v){control=v;control=128|r;}
-static void address(Pos a,u8 write){reg(28,a>>18);reg(14,(a>>14)&15);control=a;control=((a>>8)&63)|write;}
 /* Restore bank zero before returning control to DOS or the BIOS ISR. */
 static u8 pages[4][256],changed[4];
 static u16 tags[4];
-static void transfer(u16 page,u8 *p,u8 write) __critical {
- u16 i;address(BASE+((Pos)page<<8),write);
- if(write){for(i=0;i<256;i++)data=p[i];}
- else{for(i=0;i<256;i++)p[i]=data;}
+#ifdef MAPPER_ONLY
+#include "mapper.h"
+#define transfer mapperTransfer
+#else
+/* Use SCREEN 7's physical odd/even layout in every display mode.
+   SCREEN 0-6 transfer the two 128-byte halves separately. No display-mode
+   register is changed while accessing document or clipboard storage. */
+static void vramTransfer(u16 page,u8 *p,u8 write) __critical {
+ u16 a=page+0x400;u8 step=1,part=0,i,r14=(a>>6)&15,lo=0,hi=a;
+#ifdef EXTERNAL
+#ifdef NATIVE_V9968
+ if(!graphics || !wideScreen)
+#endif
+#else
+ /* DOS Kanji can leave SCRMOD at zero while R#0 selects SCREEN 7. */
+ if((*(u8*)0xf3df&14)<10)
+#endif
+ {r14=(r14&8)|((r14>>1)&3);lo=a<<7;hi=a>>1;step=2;}
+ reg(28,a>>10);
+ do {
+  reg(14,r14|(part<<2));control=lo;control=(hi&63)|write;i=part;
+  do {if(write)data=p[i];else p[i]=data;i+=step;}while(i!=part);
+ }while(++part<step);
  reg(28,0);reg(14,0);
 }
+
+#ifdef NATIVE_V9968
+#include "mapper.h"
+#include "mapper_cache.h"
+#else
+#define transfer vramTransfer
+#endif
+#endif
 static u8 *pageFor(Pos a){
  u16 page=a>>8;u8 slot=(page^(page>>8))&3;
  if(tags[slot]!=page){
@@ -291,12 +425,27 @@ static u8 lead(u8 c){return (c>=129&&c<=159)||(c>=224&&c<=252);}
 static Pos step(Pos p){if(p>=length())return p;return p+1+(lead(at(p))&&p+1<length());}
 static Pos bol(Pos p){while(p&&at(p-1)!=10)--p;return p;}
 static Pos eol(Pos p){while(p<length()&&at(p)!=10)p=step(p);return p;}
-static Pos prev(Pos p){Pos a,b;if(!p)return 0;if(at(p-1)==10)return p-1;a=bol(p);while((b=step(a))<p)a=b;return a;}
+static Pos prev(Pos p);
 static Pos numberedFrom,firstNumber,lineCount;
-static void add(u8 c){if(cursor<numberedFrom)numberedFrom=0;gap();if(left<right){set(left,c);if(c==10)lineCount++;left++;cursor++;dirty=1;}}
-static void del(Pos end){Pos p;for(p=cursor;p<end;p++)if(at(p)==10)lineCount--;if(cursor<numberedFrom)numberedFrom=0;gap();right+=end-cursor;dirty=1;}
+static u8 textChanged,changedLine;
+static Pos changedFrom,changedTo;
+static void changeRange(Pos end){
+ if(!textChanged){changedFrom=cursor;changedTo=end;changedLine=0;}
+ else{if(cursor<changedFrom)changedFrom=cursor;if(end>changedTo)changedTo=end;}
+ textChanged=1;
+}
+static void add(u8 c){if(cursor<numberedFrom)numberedFrom=0;gap();if(left<right){changeRange(cursor+1);set(left,c);if(c==10){lineCount++;changedLine=1;}left++;cursor++;dirty=1;}}
+static void del(Pos end){Pos p;changeRange(end);for(p=cursor;p<end;p++)if(at(p)==10){lineCount--;changedLine=1;}if(cursor<numberedFrom)numberedFrom=0;gap();right+=end-cursor;dirty=1;}
 #define BODY_ROWS 23
 static u8 painted[BODY_ROWS][81],rowText[81],repaint;
+#ifdef NATIVE_V9968
+static Pos paintedTop;
+#endif
+#ifdef FAST_VIEW
+static Pos viewStart[BODY_ROWS],viewEnd[BODY_ROWS];
+static u8 viewEOF[BODY_ROWS],viewRows;
+static Pos viewLength;
+#endif
 static u8 numbers;
 static Pos rowStarts[BODY_ROWS];
 static void note(const char *s){strcpy(message,s);repaint=1;}
@@ -351,10 +500,10 @@ static void paste(u8 before,u16 count){
   }
  }else start=before?cursor:(cursor<eol(cursor)?step(cursor):cursor);
  /* Check every repetition before writing, without overflow or long division. */
- if(available<newline){note("File limit: 1 MiB");return;}
+ if(available<newline){note(FULL_MESSAGE);return;}
  available-=newline;
  for(n=0;n<count;n++){
-  if(available<clipLength){note("File limit: 1 MiB");return;}
+  if(available<clipLength){note(FULL_MESSAGE);return;}
   available-=clipLength;
  }
  cursor=start;if(newline){add(10);start++;}
@@ -372,14 +521,36 @@ static u8 *renderPage(Pos p,u16 *available){
  if(p<left && left-p<*available)*available=(u16)(left-p);
  return pageFor(a)+(u8)a;
 }
+static Pos prev(Pos p){
+ Pos a,b;u8 *src=0,n;u16 available=0;
+ if(!p)return 0;if(at(p-1)==10)return p-1;
+ a=p;
+#ifdef FAST_VIEW
+ /* Cached visual-row starts are known character boundaries, even on a
+    long wrapped logical line. Never use them after a text mutation. */
+ if(graphics && !repaint && !textChanged){
+  u8 y;for(y=0;y<viewRows;y++)if(p>viewStart[y] && p<=viewEnd[y]){a=viewStart[y];break;}
+ }
+#endif
+ if(a==p)a=bol(p);
+ b=a;
+ while(a<p){
+  b=a;if(!available)src=renderPage(a,&available);
+  n=lead(*src)&&a+1<p?2:1;a+=n;
+  if(available>=n){src+=n;available-=n;}else available=0;
+ }
+ return b;
+}
 static Pos visualRow(Pos p,u8 *caret){
- u8 x=0,c,n,*src;u16 available=0;Pos size=length();
+ u8 x=0,c,n,columns=width-gutter,*src=0;u16 available=0;Pos size=length();
  *caret=255;rowAtEnd=0;
- while(x<width-gutter){
+ while(1){
+  /* An insertion caret at the right edge still needs its next screen row. */
+  if(x==columns && p==cursor)break;
   if(p==size){rowAtEnd=1;if(p==cursor)*caret=x;break;}
   if(!available)src=renderPage(p,&available);
   c=*src;n=lead(c)&&p+1<size?2:1;
-  if(x+n>width-gutter)break;
+  if(c!=10 && (u8)(x+n)>columns)break;
   if(p==cursor)*caret=x;
   if(c==10){p++;break;}
   rowText[x++]=c<32?' ':c;p++;src++;available--;
@@ -392,27 +563,66 @@ static Pos visualRow(Pos p,u8 *caret){
 }
 /* One packed scanline in the reserved row, centred on the text area. */
 static void separator(void) __critical {
- u16 stride=(*(u8*)0xfcaf==7)?256:128;
- u8 height=graphics?8:16;
+ u16 stride=graphics?videoStride:((*(u8*)0xfcaf==7)?256:128);
+ u8 height=graphics?CELL_H:16;
  u16 y=(u16)bodyRows*height+height/2;
- u16 n=stride-8;
- videoAddress(y*stride+4,64);
+ u16 n=stride-(graphics?leftMargin:8);
+ videoAddress(((Pos)y<<(stride==256?8:7))+(graphics?leftMargin/2:4),64);
  while(n--)videoData=ink*17;
  videoCtrl=0;videoCtrl=0x8e;
 }
 /* The first eight pixels are outside both console text areas. */
 static void clearTopMargin(void) __critical {
- u8 y,i;u16 stride=(*(u8*)0xfcaf==7)?256:128;
+ u8 y,i;u16 stride=graphics?videoStride:((*(u8*)0xfcaf==7)?256:128);
  for(y=0;y<8;y++){
-  videoAddress((u16)y*stride,64);
-  for(i=0;i<4;i++)videoData=paper*17;
+  videoAddress(((Pos)y<<(stride==256?8:7)),64);
+  for(i=0;i<(graphics?leftMargin/2:4);i++)videoData=paper*17;
  }
  videoCtrl=0;videoCtrl=0x8e;
 }
 static u8 statusIns,statusDirty;
+static void paintTextRow(u8 y){
+ u8 i=0;
+ if(!repaint && !strcmp((char*)rowText,(char*)painted[y]))return;
+ if(graphics && !repaint){
+  while(rowText[i] && rowText[i]==painted[y][i]){
+   if(lead(rowText[i])){if(!rowText[i+1] || rowText[i+1]!=painted[y][i+1])break;i+=2;}
+   else i++;
+  }
+ }
+ locate(i,y);for(;rowText[i];i++)put(rowText[i]);str("\033K");strcpy((char*)painted[y],(char*)rowText);
+}
+#ifdef NATIVE_V9968
+static void jePaintIfActive(void);
+#endif
 static void display(void){
  Pos p,next,lineNo,value;u8 y,x,cx=0,cy=0,slot=0,used=0,i;
  foreground=ink;background=paper;
+#ifdef FAST_VIEW
+ /* Cursor-only movement never changes text, line numbers or the status bar. */
+ if(graphics && !repaint && !*message && statusIns==ins && statusDirty==dirty){
+  if(textChanged && !changedLine){
+   Pos delta=length()-viewLength,newEnd;
+   for(y=0;y<viewRows;y++)if(changedFrom>=viewStart[y] &&
+      (changedFrom<viewEnd[y] || (viewEOF[y] && changedFrom==viewEnd[y]))){
+    newEnd=viewEnd[y]+delta;
+    if(changedTo>viewEnd[y] && changedTo>newEnd)break;
+    next=visualRow(viewStart[y],&x);
+    if(next!=newEnd || rowAtEnd!=viewEOF[y] || x==255)break;
+    if(gutter){memmove(rowText+gutter,rowText,strlen((char*)rowText)+1);memcpy(rowText,painted[y],gutter);}
+    paintTextRow(y);viewEnd[y]=next;
+    for(i=y+1;i<viewRows;i++){viewStart[i]+=delta;viewEnd[i]+=delta;}
+    viewLength=length();textChanged=0;break;
+   }
+  }
+  if(!textChanged){
+   for(y=0;y<viewRows;y++)if(cursor>=viewStart[y] &&
+      (cursor<viewEnd[y] || (viewEOF[y] && cursor==viewEnd[y]))){
+    locate((u8)(cursor-viewStart[y])+gutter,y);caretLine(1);return;
+   }
+  }
+ }
+#endif
  {
   u8 wanted=0;Pos threshold=1000;
   if(numbers){wanted=4;while(lineCount>=threshold){wanted++;threshold=(threshold<<3)+(threshold<<1);}}
@@ -427,11 +637,30 @@ static void display(void){
   if(next<=p)break;
   p=next;
  }
+#ifdef NATIVE_V9968
+ if(graphics && !kanji && !repaint && top!=paintedTop){
+  if(cursorVisible)caretLine(0);
+  if(top==viewStart[1]){
+   __critical {nativeCopy(leftMargin,8,leftMargin,0,width*6,(bodyRows-1)*8);}
+   memmove(painted,painted+1,(bodyRows-1)*81);painted[bodyRows-1][0]=255;
+  }else if(visualRow(top,&x)==paintedTop){
+   __critical {nativeScrollDown(bodyRows);}
+   memmove(painted+1,painted,(bodyRows-1)*81);painted[0][0]=255;
+  }
+ }
+ paintedTop=top;
+#endif
  if(!numberedFrom || numberedFrom>top){numberedFrom=0;firstNumber=1;}
  if(numbers)while(numberedFrom<top){if(at(numberedFrom)==10)firstNumber++;numberedFrom++;}
  lineNo=firstNumber;p=top;
+#ifdef FAST_VIEW
+ viewRows=0;
+#endif
  for(y=0;y<bodyRows;y++){
   next=visualRow(p,&x);
+#ifdef FAST_VIEW
+  viewStart[y]=p;viewEnd[y]=next;viewEOF[y]=rowAtEnd;viewRows=y+1;
+#endif
   if(x!=255){cx=x+gutter;cy=y;}
   if(numbers){
    memmove(rowText+gutter,rowText,strlen((char*)rowText)+1);
@@ -442,16 +671,7 @@ static void display(void){
    }
    if(next>p && at(next-1)==10)lineNo++;
   }
-  if(repaint||strcmp((char*)rowText,(char*)painted[y])){
-   i=0;
-   if(graphics && !repaint){
-    while(rowText[i] && rowText[i]==painted[y][i]){
-     if(lead(rowText[i])){if(!rowText[i+1] || rowText[i+1]!=painted[y][i+1])break;i+=2;}
-     else i++;
-    }
-   }
-   locate(i,y);for(;rowText[i];i++){foreground=ink;put(rowText[i]);}foreground=ink;str("\033K");strcpy((char*)painted[y],(char*)rowText);
-  }
+  paintTextRow(y);
   if(rowAtEnd){
    for(y++;y<bodyRows;y++)if(repaint||strcmp((char*)painted[y],"~")){
     locate(0,y);str("~\033K");strcpy((char*)painted[y],"~");
@@ -472,7 +692,29 @@ static void display(void){
  }
  str(dirty?" *\033K":"\033K");statusIns=ins;statusDirty=dirty;
  }
- repaint=0;clearTopMargin();locate(cx,cy);if(graphics)caretLine(1);
+#ifdef FAST_VIEW
+ viewLength=length();
+#endif
+ textChanged=0;
+ repaint=0;clearTopMargin();
+#ifdef NATIVE_V9968
+ jePaintIfActive();
+#endif
+ locate(cx,cy);if(graphics)caretLine(1);
+}
+/* DOS maps RAM into page 0: read the main-ROM generation through RDSLT. */
+static u8 machineVersion(void) __naked{
+ __asm
+ push ix
+ push iy
+ ld a,(#0xfcc1)
+ ld hl,#0x002d
+ call #0x000c
+ pop iy
+ pop ix
+ ei
+ ret
+ __endasm;
 }
 static u8 cpu(u8 mode) __naked{
  mode;
@@ -530,7 +772,7 @@ static void openOther(const char *name){
  left=cursor=top=0;right=LIMIT;dirty=0;lineCount=1;strcpy(path,name);
  if(!file(0)&&fileError!=0xd7){
   switchBuffer(old);memset(&documents[which],0,sizeof(Document));
-  note("Cannot read file (or over 1 MiB)");return;
+  note(READ_MESSAGE);return;
  }
  remember();numberedFrom=0;firstNumber=1;repaint=1;
 }
@@ -567,19 +809,66 @@ static void selectMode(u8 mode) __naked {
 }
 static u8 initialMode;
 static u8 dosScreen;
+#ifdef NATIVE_V9968
+#include "msxje.h"
+#endif
 static void changeMode(u8 mode){
+#ifdef NATIVE_V9968
+ jeClose();
+#endif
+ if(cursorVisible)caretLine(0);
+ wideScreen=ascii80;
+#ifdef NATIVE_V9968
+ if(mode)wideScreen=1;
+#endif
+ videoStride=wideScreen?256:128;leftMargin=wideScreen?16:8;screenHeight=212;atlasY=256;
+#ifdef NATIVE_V9968
+ selectMode(0);kanji=mode;biosScreen(wideScreen?7:5);
+#ifdef EXTERNAL
+ {
+  u8 r,v;
+  __critical {
+   for(r=0;r<24;r++){
+    v=*(u8*)(r<8?0xf3df+r:0xffe7+r-8);
+    if(r==1)v&=~32; /* external VDP must not drive the BIOS interrupt */
+    reg(r,v);
+   }
+  }
+ }
+#endif
+ videoCtrl=(*(u8*)0xffe8)|128;videoCtrl=0x89;
+ width=kanji?60:(ascii80?80:40);bodyRows=23;
+ /* FIL needs the wider R#2 address mask, or rows repeat after y=255. */
+ __critical {reg(20,kanji?0x21:1);reg(2,kanji?63:31);}
+ if(kanji){screenHeight=424;atlasY=512;}
+ applyColors();clearAsciiPage();graphics=1;escape=firstByte=0;
+ if(kanji && !jeInit())note("MSX-JE not available");
+#else
  if(graphics){if(cursorVisible)caretLine(0);graphics=0;biosScreen(dosScreen);}
  selectMode(mode);kanji=consoleMode();
  if(!kanji){
-  biosScreen(5);
+  biosScreen(wideScreen?7:5);
+#ifndef MAPPER_ONLY
+  reg(20,1);
+#endif
   videoCtrl=(*(u8*)0xffe8)|128;videoCtrl=0x89;
-  applyColors();clearAsciiPage();graphics=1;escape=0;width=40;bodyRows=23;
+  applyColors();clearAsciiPage();graphics=1;escape=0;width=ascii80?80:40;bodyRows=23;
  }else{
   width=*(u8*)0xf3b0;if(width<16||width>80)width=40;width--;
   bodyRows=*(u8*)0xf3b1;bodyRows=bodyRows>=25?22:bodyRows>=12?bodyRows-3:9;
+#ifndef MAPPER_ONLY
+  reg(20,1);
+#endif
   applyColors();put(12);
  }
- extension=0;reg(20,1);reg(21,0);reg(28,0);
+#endif
+#ifndef MAPPER_ONLY
+ extension=0;
+#ifndef NATIVE_V9968
+ reg(20,1);
+#endif
+ reg(21,0);reg(28,0);
+#endif
  top=bol(top);repaint=1;
 }
 static u8 option(const char *name){
@@ -652,17 +941,37 @@ static void substitute(u8 whole){
 }
 static u8 savedFunctionKeys[160];
 void main(void){
- u8 k,n,i,fast=1,loadFailed=0;u16 count=0,repeat;Pos a,b,col;
+ u8 k,n,i,fast,loadFailed=0;u16 count=0,repeat;Pos a,b,col;
+ fast=machineVersion()==3;
+ initialColumns=*(u8*)0xf3b0;ascii80=initialColumns>40;
+ textChanged=changedLine=0;
+#ifdef NATIVE_V9968
+ jeReady=0;jePos=jeLength=0;
+ mapperInit();memset(mapperCacheTags,255,sizeof(mapperCacheTags));memset(mapperCacheDirty,0,sizeof(mapperCacheDirty));
+#endif
+#ifdef MAPPER_ONLY
+ graphics=0;
+ if(!mapperInit()){str("vimSX requires 256KB mapper RAM and free segments.\r\n");return;}
+#endif
  memset(documents,0,sizeof(documents));activeBuffer=0;bufferBase=clipLength=0;clipLines=0;message[0]=0;
  memset(tags,255,sizeof(tags));memset(changed,0,sizeof(changed));left=cursor=top=0;right=LIMIT;dirty=ins=kanji=commandKeys=pending=0;pattern[0]=0;
- dosInk=ink=FORCLR&15;dosPaper=paper=BAKCLR&15;dosBorder=BDRCLR;initialMode=kanji=consoleMode();width=*(u8*)0xf3b0;if(width<16||width>80)width=40;width--;numbers=gutter=0;numberedFrom=0;lineCount=1;repaint=1;
+#ifndef MAPPER_ONLY
+ graphics=cursorVisible=0;
+#endif
+ dosInk=ink=FORCLR&15;dosPaper=paper=BAKCLR&15;dosBorder=BDRCLR;initialMode=kanji=*(u8*)0xfcaf==0?0:consoleMode();numbers=gutter=0;numberedFrom=0;lineCount=1;repaint=1;
+#ifndef MAPPER_ONLY
  extension=0;reg(20,1);reg(21,0);
+#ifdef EXTERNAL
+ /* Start storage access in a known non-interleaved mode. */
+ reg(0,0);reg(1,0);
+#endif
+#endif
  memcpy(savedFunctionKeys,(void*)0xf87f,160);memset((void*)0xf87f,0,160);
  if(fast){originalCPU=cpu(3);cpu(2);}
  n=*(u8*)0x80;i=0;while(i<n&&((char*)0x81)[i]==' ')i++;
  for(k=0;i<n&&k<63&&((char*)0x81)[i]>' ';i++)path[k++]=((char*)0x81)[i];
  path[k]=0;if(k){if(!file(0)&&fileError!=0xd7)loadFailed=1;}else strcpy(path,"TEXT.TXT");
- graphics=cursorVisible=0;selectMode(0);dosScreen=*(u8*)0xfcaf;readFont();changeMode(0);
+ graphics=cursorVisible=0;selectMode(0);dosScreen=*(u8*)0xfcaf;readFont();changeMode(initialMode);
  if(loadFailed)goto done;
  remember();
  for(;;){display();commandKeys=!ins;k=key();commandKeys=0;if(*message){message[0]=0;repaint=1;}
@@ -702,8 +1011,8 @@ void main(void){
    else if(option("set number")||option("set nu")||option("set nonumber")||option("set nonu")){
     numbers=option("set number")||option("set nu");top=bol(top);repaint=1;
    }
-   else if(!strcmp(command,"z80")&&fast)cpu(0);
-   else if(!strcmp(command,"r800")&&fast)cpu(2);
+   else if(!strcmp(command,"z80")){if(fast)cpu(0);}
+   else if(!strcmp(command,"r800")){if(fast)cpu(2);else note("R800 requires MSX turbo R");}
    else if(!strncmp(command,"s/",2))substitute(0);
    else if(!strncmp(command,"%s/",3))substitute(1);
    else if(option("color 1")||option("color 2")||option("color 3")||option("color dos")){
@@ -714,11 +1023,28 @@ void main(void){
     if(cursorVisible&&graphics)caretLine(0);
     applyColors();if(graphics)clearAsciiPage();else put(12);repaint=1;
    }
+   else if(option("mode80")||option("mode 80")){ascii80=1;changeMode(0);}
+   else if(option("mode40")||option("mode 40")){ascii80=0;changeMode(0);}
    else if(option("ascii"))changeMode(0);
    else if(option("kanji"))changeMode(1);
    break;
   }
  }
- done:memcpy((void*)0xf87f,savedFunctionKeys,160);FORCLR=dosInk;BAKCLR=dosPaper;BDRCLR=dosBorder;if(graphics){graphics=0;biosScreen(dosScreen);}selectMode(initialMode);FORCLR=dosInk;BAKCLR=dosPaper;BDRCLR=dosBorder;if(fast)cpu(originalCPU&3);put(12);
- if(loadFailed)str("Cannot read file (or over 1 MiB)\r\n");
+ done:
+#ifdef NATIVE_V9968
+ jeClose();
+#ifdef EXTERNAL
+ /* DOS uses the main VDP. Do not leave a frozen editor on this output. */
+ if(cursorVisible)caretLine(0);
+ clearAsciiPage();
+ foreground=ink;background=paper;
+ locate(0,2);str("vimSX has exited.");
+ locate(0,4);str("DOS: select the main VDP display.");
+#endif
+#endif
+#if !defined(MAPPER_ONLY) && !defined(EXTERNAL)
+ reg(20,1);
+#endif
+ memcpy((void*)0xf87f,savedFunctionKeys,160);FORCLR=dosInk;BAKCLR=dosPaper;BDRCLR=dosBorder;if(graphics){graphics=0;*(u8*)0xf3ae=initialColumns;biosScreen(dosScreen);}selectMode(initialMode);FORCLR=dosInk;BAKCLR=dosPaper;BDRCLR=dosBorder;if(fast)cpu(originalCPU&3);put(12);
+ if(loadFailed)str(READ_MESSAGE "\r\n");
 }

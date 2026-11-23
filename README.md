@@ -1,22 +1,34 @@
 # vimSX
 
-MSX-DOS2向けの小型Vi風テキストエディタです。MSX turbo RとV9968の4MiB VRAMを使い、英数字・Shift-JISの文章やソースファイルを編集します。独立した実装であり、Vim本体の移植や完全互換版ではありません。
+MSX-DOS2向けの小型Vi風テキストエディタです。通常のマッパRAMを使う版と、V9968の4MiB VRAM・描画機能を使う版の2タイプで、英数字・Shift-JISの文章やソースファイルを編集します。独立した実装であり、Vim本体の移植や完全互換版ではありません。
+
+2026-11-23更新：表示幅ぴったりの行で余分な空白行が出る問題と、V9968版で画面モードを切り替えると長文データが化ける問題を修正しました。MODE80対応初版のV9968版をお使いの場合は、COMファイルを今回の版へ差し替えてください。検証内容は [VALIDATION.md](docs/VALIDATION.md) を参照してください。
 
 ## 動作環境と起動
 
-- MSX turbo R（Z80 / R800切り替え対応）。起動時はR800 DRAMモードを選択し、終了時に元のCPU設定へ戻します。
-- MSX-DOS2互換環境、V9968の4MiB VRAM拡張。通常のV9938/V9958だけの環境には対応しません。
-- 日本語表示・変換には、別途適切に導入した漢字ドライバとMSX-JEが必要です。
+- MSX2+のZ80、またはMSX turbo R。通常版は合計256KB以上、V9968版は128KB以上のメモリマッパRAMが必要です。
+- 起動時にBIOSの機種情報を確認します。turbo RのみR800 DRAMモードへ切り替え、終了時に元のCPU設定へ戻します。非turbo RはZ80のまま動作し、R800用BIOSを呼びません。
+- MSX-DOS2環境。通常版はV9958を使用し、V9968を必要としません。V9968版には4MiB VRAM拡張が必要です。
+- 日本語表示には漢字ROM、通常版のKANJI画面には漢字ドライバ、日本語変換には適切に導入したMSX-JEが必要です。
 - 検証はカスタムBlueMSX+ / openMSX環境で実施しました。実機およびNextorの各構成での動作は未検証です。
 
 `bin` のCOMファイルを、ご自身のDOSディスクへコピーして実行してください。
 
 ```text
-VIINT MAIN.C
-VIEXT NOTE.TXT
+VIMAP MAIN.C
+VI9IN MAIN.C
+VI9EX NOTE.TXT
 ```
 
-`VIINT.COM` は内部V9968（98h）、`VIEXT.COM` は外部V9968（88h）を本文保存に使います。**外部版でも画面表示には内部VDPを使います。** 外部V9968側に画面を出す版ではありません。ファイル名を省略すると空の文書を開き、保存名は `TEXT.TXT` になります。
+| COM | 本文・コピー領域 | 画面出力 |
+|---|---|---|
+| `VIMAP.COM` | 本体・拡張マッパRAM | 本体V9958 |
+| `VI9IN.COM` | 内蔵V9968のVRAM＋任意のマッパキャッシュ | 内蔵V9968（98h） |
+| `VI9EX.COM` | 外付けV9968のVRAM＋任意のマッパキャッシュ | 外付けV9968（88h） |
+
+外付け版では外付けV9968の映像出力を選んでください。終了後のDOS操作は本体側の映像出力で行います。ファイル名を省略すると空の文書を開き、保存名は `TEXT.TXT` になります。従来の `VIINT.COM` / `VIEXT.COM` は比較用に残していますが、この2タイプの起動には上記のCOMを使います。
+
+V9968版のKANJI画面では、半角英数字・記号に専用の7×12ドット字体（8×16セル）を使います。外付け版は終了時に編集画面を消し、DOS操作用に本体VDP側を選択する案内を表示します。映像出力の自動切替は行いません。
 
 配布物にエミュレータ、BIOS、DOS、MSX-JE、ディスクイメージ、フォントROMは含みません。ASCIIフォントは実行環境のBIOSから読み取ります。
 
@@ -36,11 +48,17 @@ VIEXT NOTE.TXT
 | 配色 | `:color 1` 青＋白、`:color 2` 黒＋白、`:color 3` 黒＋濃緑、`:color dos` |
 | CPU | `:z80` / `:r800` |
 
-コロンコマンドと検索はEnterで実行します。ASCIIはSCREEN 5上の40桁×25行構成（本文23行、区切り、状態・コマンド行）です。KANJI画面の桁数・行数は漢字ドライバに依存します。日本語変換はKANJIのINSERT状態でMSX-JEを使用します。検証環境ではCtrl+Spaceで変換入力を開始し、Spaceで候補、Enterで確定、Ctrl+Spaceで終了しました。ホストWindowsのIMEではありません。
+非turbo Rでは `:z80` はそのまま継続し、`:r800` は「R800 requires MSX turbo R」と表示して編集を継続します。
+
+コロンコマンドと検索はEnterで実行します。ASCIIは起動時のDOSの桁数を引き継ぎ、40桁ならSCREEN 5（256×212）、80桁ならSCREEN 7（512×212）のカラー画面を使用します。どちらも25行構成（本文23行、区切り、状態・コマンド行）です。`:mode40` / `:mode80`（`:mode 40` / `:mode 80`も可）で編集中に切り替えられます。`:ascii` は最後に選択したASCIIの桁数へ戻ります。通常版のKANJI画面は漢字ドライバに従います。V9968版のKANJI画面はFILを使う512×424、60半角桁（30全角桁）・本文23行です。漢字ROMの16×16ドットを省略せず描画します。日本語変換はKANJIのINSERT状態でMSX-JEを使用します。Ctrl+Spaceで変換入力を開始し、Spaceで候補、Enterで確定、Ctrl+Spaceで終了します。ホストWindowsのIMEではありません。
 
 操作の詳細は [コマンド一覧](docs/COMMANDS-ja.txt) を参照してください。
 
-## VRAMの使い方
+## メモリの使い方
+
+通常版はDOS2のマッパ管理APIで空きセグメントを確保し、2文書と共通コピー領域へ均等に割り当てます。搭載RAMの全量が編集容量になるわけではありません。DOSやドライバの使用量により容量は変わります。終了時はDOSがユーザーセグメントを回収します。最低容量未満・空き不足では編集画面へ入らず終了します。
+
+V9968版のVRAM配置は以下のとおりです。
 
 | アドレス | 用途 |
 |---|---|
@@ -49,7 +67,9 @@ VIEXT NOTE.TXT
 | `140000–23FFFF` | 文書2のギャップバッファ（1MiB） |
 | `240000`以降 | 共通コピー／カットレジスタ（最大1MiBの本文＋行末LF） |
 
-本文は合計2MiBが上限です。残る4MiB内の領域をすべて使い切る構成ではありません。メインRAMには1KiBのVRAMページキャッシュ、フォント、描画差分、管理情報などを置きます。
+V9968版の本文は合計2MiBが上限です。残る4MiB内の領域をすべて使い切る構成ではありません。メインRAMには1KiBのページキャッシュ、フォント、描画差分、管理情報などを置きます。256KB以上の構成で空きセグメントがある場合は、追加で16KiBのマッパキャッシュを確保します。128KB構成や確保失敗時は追加キャッシュなしで動作します。キャッシュの置換時に変更内容をVRAMへ書き戻します。
+
+V9968版は矩形塗りつぶし・コピーによる文字描画とASCIIの1行スクロールを使います。変更のない行やカーソル移動だけでは本文を描き直しません。長い論理行の走査・大きなコピー処理は依然CPU時間を要します。
 
 ## 現状の制限
 
@@ -74,7 +94,7 @@ SDCCがPATHにない場合:
 python tools/build.py --sdcc /path/to/sdcc
 ```
 
-Windowsでは `--sdcc "C:\path\to\sdcc\bin\sdcc.exe"` と指定できます。結果は `bin/VIINT.COM` と `bin/VIEXT.COM` です。ビルドスクリプトはエミュレータの設定やシステムのキーマッピングを変更しません。
+Windowsでは `--sdcc "C:\path\to\sdcc\bin\sdcc.exe"` と指定できます。結果は `bin/VIMAP.COM`、`bin/VI9IN.COM`、`bin/VI9EX.COM` です。`--variants MAP` のように対象を指定できます。ビルドスクリプトはエミュレータの設定やシステムのキーマッピングを変更しません。
 
 [検証記録](docs/VALIDATION.md) / [第三者ライセンス](THIRD_PARTY.md)
 
@@ -84,11 +104,15 @@ vimSXの独自コード・ドキュメントは [MIT](LICENSE) です。SDCCラ�
 
 ## English
 
-vimSX is a small, independently implemented Vi-like editor for MSX-DOS2, MSX turbo R and the V9968 4MiB VRAM extension. It is not a port of Vim and does not implement full Vi/Vim compatibility.
+The 2026-11-23 correction fixes extra blank rows after exactly full-width lines and VRAM document corruption across display-mode changes. Replace the previous MODE80 V9968 binaries with this build; see [validation](docs/VALIDATION.md).
 
-Two documents, up to 1MiB each, and a shared cut/copy register live in VRAM. A small cache and rendering state remain in main RAM. Use `VIINT filename` for internal V9968 storage or `VIEXT filename` for external V9968 storage at ports 88h/89h. Both variants display on the internal VDP.
+vimSX is a small, independently implemented Vi-like editor for MSX-DOS2 on MSX2+ or MSX turbo R. It is not a port of Vim and does not implement full Vi/Vim compatibility.
 
-Supported features include normal/insert modes, arrows and hjkl, line/character cut, line yank, paste across two files, literal search/replacement, line numbers, color presets and Z80/R800 switching. Japanese display and conversion require a separately installed Kanji driver and MSX-JE. ASCII uses a 40-column graphics console; Kanji layout depends on the driver.
+The BIOS generation is read through the main-ROM slot. Only turbo R enters R800 DRAM mode and restores its prior CPU mode on exit. Other machines stay on Z80; `:r800` reports that turbo R is required. Non-turbo-R tests use 256KiB mapper RAM and a DOS2 cartridge.
+
+Use `VIMAP filename` for standard mapper RAM (256KiB minimum, no V9968 required). Available DOS2 user segments are shared between two documents and a cut/copy register; capacity depends on free RAM. Use `VI9IN filename` or `VI9EX filename` for internal or external V9968 storage and display (128KiB mapper RAM minimum). These versions support two 1MiB documents in VRAM and optionally use one extra 16KiB mapper segment as a cache on configurations with at least 256KiB. The external version displays on the external V9968 output.
+
+Supported features include normal/insert modes, arrows and hjkl, line/character cut, line yank, paste across two files, literal search/replacement, line numbers, color presets and Z80/R800 switching. Japanese conversion requires a separately installed MSX-JE. ASCII inherits the DOS startup width (40 or 80 columns), using 256x212 or 512x212 graphics with 23 text rows. Use `:mode40` / `:mode80` to switch, and `:ascii` to return to the last ASCII width; the mapper version's Kanji layout depends on the installed driver. Native V9968 Kanji uses 512x424 flat-interlace graphics, 60 half-width columns and 23 text rows, with full 16x16 Japanese glyphs. Ctrl+Space toggles conversion in Kanji insert mode.
 
 This is an early development release tested in custom emulators, not validated on physical hardware or across Nextor configurations. It has no undo, atomic save, recovery, regular expressions, splits, Visual mode, plugins or syntax highlighting. Files are interpreted as ASCII/Shift-JIS; CR bytes are stripped on load and LF is written as CRLF. Keep backups. `:q!` discards unsaved changes in both buffers.
 

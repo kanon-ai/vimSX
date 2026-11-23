@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-23",
+  "scope": "Native KANJI ANK font and external exit notice; emulator unchanged",
+  "blue": [
+    {
+      "variant": "9IN",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "f13a525d679c88c4655cfafc7935e729d4ef19c56f22ee52aa46d972b6169e5d"
+    },
+    {
+      "variant": "9EX",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "59e7c79e37a7f3566ef55029df2c54044f78513e830682f2b03efe4670e2ca5d"
+    }
+  ],
+  "ime": [
+    {
+      "variant": "9IN",
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "f13a525d679c88c4655cfafc7935e729d4ef19c56f22ee52aa46d972b6169e5d"
+    },
+    {
+      "variant": "9EX",
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "59e7c79e37a7f3566ef55029df2c54044f78513e830682f2b03efe4670e2ca5d"
+    }
+  ],
+  "boundaries": [
+    {
+      "variant": "9IN",
+      "saved_bytes_match": true,
+      "pixel_comparisons_match": true,
+      "sha256": "f13a525d679c88c4655cfafc7935e729d4ef19c56f22ee52aa46d972b6169e5d"
+    },
+    {
+      "variant": "9EX",
+      "saved_bytes_match": true,
+      "pixel_comparisons_match": true,
+      "sha256": "59e7c79e37a7f3566ef55029df2c54044f78513e830682f2b03efe4670e2ca5d"
+    }
+  ],
+  "mapper_binary_unchanged": true
+}

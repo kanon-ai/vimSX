@@ -1,0 +1,405 @@
+{
+  "date": "2026-11-23",
+  "environment": "Custom openMSX, SDCC 4.6.0 #16555; no physical hardware or Nextor validation",
+  "binaries": {
+    "VI9EX.COM": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507",
+    "VI9IN.COM": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814",
+    "VIEXT.COM": "7552259f143ad3a6709684a8487e298b1a957ed4eaeb83a8ade9bbbf99b24907",
+    "VIINT.COM": "54741bd2dabb00fe405e1e32558625d495e3018f018dc3bb954998e4c0247e8c",
+    "VIMAP.COM": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804"
+  },
+  "results": {
+    "cpu_mapper": [
+      {
+        "machine": "Sony_HB-F1XV",
+        "variant": "MAP",
+        "ram_kb": 256,
+        "cpu_calls": [],
+        "saved_bytes_match": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804",
+        "mapper_segments": 10
+      },
+      {
+        "machine": "Panasonic_FS-A1ST",
+        "variant": "MAP",
+        "ram_kb": 256,
+        "cpu_calls": [
+          3,
+          2,
+          0,
+          2,
+          2
+        ],
+        "saved_bytes_match": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804",
+        "mapper_segments": 6
+      }
+    ],
+    "cpu_native128": [
+      {
+        "machine": "Sony_HB-F1XV",
+        "variant": "9IN",
+        "ram_kb": 128,
+        "cpu_calls": [],
+        "saved_bytes_match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814",
+        "mapper_segments": 0
+      },
+      {
+        "machine": "Sony_HB-F1XV",
+        "variant": "9EX",
+        "ram_kb": 128,
+        "cpu_calls": [],
+        "saved_bytes_match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507",
+        "mapper_segments": 0
+      }
+    ],
+    "cpu_native256": [
+      {
+        "machine": "Panasonic_FS-A1ST",
+        "variant": "9IN",
+        "ram_kb": 256,
+        "cpu_calls": [
+          3,
+          2,
+          0,
+          2,
+          2
+        ],
+        "saved_bytes_match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814",
+        "mapper_segments": 1
+      },
+      {
+        "machine": "Panasonic_FS-A1ST",
+        "variant": "9EX",
+        "ram_kb": 256,
+        "cpu_calls": [
+          3,
+          2,
+          0,
+          2,
+          2
+        ],
+        "saved_bytes_match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507",
+        "mapper_segments": 1
+      }
+    ],
+    "regression_mapper": [
+      {
+        "variant": "MAP",
+        "case": "exchange",
+        "saved_bytes_match": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804"
+      },
+      {
+        "variant": "MAP",
+        "case": "new",
+        "saved_bytes_match": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804"
+      },
+      {
+        "variant": "MAP",
+        "case": "bulk",
+        "saved_bytes_match": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804"
+      },
+      {
+        "variant": "MAP",
+        "case": "capacity",
+        "saved_bytes_match": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804"
+      }
+    ],
+    "regression_native": [
+      {
+        "variant": "9IN",
+        "case": "exchange",
+        "saved_bytes_match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814"
+      },
+      {
+        "variant": "9IN",
+        "case": "new",
+        "saved_bytes_match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814"
+      },
+      {
+        "variant": "9IN",
+        "case": "bulk",
+        "saved_bytes_match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814"
+      },
+      {
+        "variant": "9IN",
+        "case": "capacity",
+        "saved_bytes_match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814"
+      },
+      {
+        "variant": "9EX",
+        "case": "exchange",
+        "saved_bytes_match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507"
+      },
+      {
+        "variant": "9EX",
+        "case": "new",
+        "saved_bytes_match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507"
+      },
+      {
+        "variant": "9EX",
+        "case": "bulk",
+        "saved_bytes_match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507"
+      },
+      {
+        "variant": "9EX",
+        "case": "capacity",
+        "saved_bytes_match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507"
+      }
+    ],
+    "boundaries_mapper": [
+      {
+        "variant": "MAP",
+        "saved_bytes_match": true,
+        "pixel_comparisons_match": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804"
+      }
+    ],
+    "boundaries_native": [
+      {
+        "variant": "9IN",
+        "saved_bytes_match": true,
+        "pixel_comparisons_match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814"
+      },
+      {
+        "variant": "9EX",
+        "saved_bytes_match": true,
+        "pixel_comparisons_match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507"
+      }
+    ],
+    "mapper_configurations": [
+      {
+        "variant": "MAP",
+        "case": "128-reject",
+        "source_unchanged": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804"
+      },
+      {
+        "variant": "MAP",
+        "case": "128-plus-128",
+        "source_unchanged": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804",
+        "limit": 49152,
+        "slots": [
+          2,
+          131
+        ],
+        "copied_bytes": 19600
+      }
+    ],
+    "kana_internal": [
+      {
+        "variant": "9IN",
+        "mode": "ascii",
+        "actual": "82c982c982c982c982c982c982c982c982c982c982c982c982c982c9",
+        "characters": 14,
+        "match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814"
+      },
+      {
+        "variant": "9IN",
+        "mode": "kanji",
+        "actual": "82c982c982c982c982c982c982c982c982c982c982c982c982c982c982c982c9",
+        "characters": 16,
+        "match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814"
+      }
+    ],
+    "kana_external": [
+      {
+        "variant": "9EX",
+        "mode": "ascii",
+        "actual": "82c982c982c982c982c982c982c982c982c982c982c982c982c982c9",
+        "characters": 14,
+        "match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507"
+      },
+      {
+        "variant": "9EX",
+        "mode": "kanji",
+        "actual": "82c982c982c982c982c982c982c982c982c982c982c982c982c982c982c982c9",
+        "characters": 16,
+        "match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507"
+      }
+    ],
+    "timings_turboR": [
+      {
+        "variant": "MAP",
+        "cpu": "z80",
+        "startup_ms": 1000.2997587682252,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804",
+        "cpu_mean_ms": 193.16575151311142,
+        "insert_mean_ms": 133.79411569102768,
+        "backspace_mean_ms": 200.11638350684217,
+        "lines_mean_ms": 118.79633610357585,
+        "move_mean_ms": 178.36618446863582,
+        "numbers_mean_ms": 390.3209299878429,
+        "exit_mean_ms": 48.80610990130663
+      },
+      {
+        "variant": "MAP",
+        "cpu": "r800",
+        "startup_ms": 1000.2997587682252,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804",
+        "cpu_mean_ms": 58.327129099740915,
+        "insert_mean_ms": 38.10670382884551,
+        "backspace_mean_ms": 50.09235810696602,
+        "lines_mean_ms": 36.5212229797673,
+        "move_mean_ms": 38.06264747599469,
+        "numbers_mean_ms": 86.81261631482921,
+        "exit_mean_ms": 15.299942683590473
+      },
+      {
+        "variant": "9IN",
+        "cpu": "z80",
+        "startup_ms": 814.9196336405886,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814",
+        "cpu_mean_ms": 59.73432377578761,
+        "insert_mean_ms": 111.76099312405105,
+        "backspace_mean_ms": 191.68138688017606,
+        "lines_mean_ms": 88.32742506481218,
+        "move_mean_ms": 171.30158434374485,
+        "numbers_mean_ms": 264.3063108113838,
+        "exit_mean_ms": 28.37157608951202
+      },
+      {
+        "variant": "9IN",
+        "cpu": "r800",
+        "startup_ms": 814.9196336405886,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814",
+        "cpu_mean_ms": 23.953230554907872,
+        "insert_mean_ms": 23.965209392407516,
+        "backspace_mean_ms": 34.47692374310165,
+        "lines_mean_ms": 19.62566383713667,
+        "move_mean_ms": 37.771530150310106,
+        "numbers_mean_ms": 60.01340021334182,
+        "exit_mean_ms": 14.424645217943066
+      }
+    ],
+    "timings_sony128": [
+      {
+        "variant": "9IN",
+        "cpu": "z80",
+        "startup_ms": 2349.167561799057,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814",
+        "cpu_mean_ms": 74.43873453190264,
+        "insert_mean_ms": 128.98901955416122,
+        "backspace_mean_ms": 217.4656834877059,
+        "lines_mean_ms": 93.55924874887783,
+        "move_mean_ms": 171.8494268843546,
+        "numbers_mean_ms": 268.47930393388,
+        "exit_mean_ms": 27.009764276371584
+      }
+    ],
+    "timings_sony256": [
+      {
+        "variant": "9IN",
+        "cpu": "z80",
+        "startup_ms": 2349.178457038537,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814",
+        "cpu_mean_ms": 74.44208691328029,
+        "insert_mean_ms": 111.301589891111,
+        "backspace_mean_ms": 191.63315449309906,
+        "lines_mean_ms": 88.08317493027664,
+        "move_mean_ms": 171.78518800875818,
+        "numbers_mean_ms": 265.87464328566904,
+        "exit_mean_ms": 27.587305090449377
+      }
+    ],
+    "msxje": [
+      {
+        "configuration": "map-sony",
+        "variant": "MAP",
+        "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+        "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+        "match": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804"
+      },
+      {
+        "configuration": "map-turbo",
+        "variant": "MAP",
+        "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+        "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+        "match": true,
+        "sha256": "99cb5b9521127f05d1fd3472f5d40ba4cf3a5dfd0b7bf31a77ca3090ccba4804"
+      },
+      {
+        "configuration": "128-in",
+        "variant": "9IN",
+        "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+        "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+        "match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814"
+      },
+      {
+        "configuration": "128-ex",
+        "variant": "9EX",
+        "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+        "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+        "match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507"
+      },
+      {
+        "configuration": "256-in",
+        "variant": "9IN",
+        "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+        "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+        "match": true,
+        "sha256": "8b1d3e88260c94b19f07e0935d235ff871af72cf033083def8b99ffb2c853814"
+      },
+      {
+        "configuration": "256-ex",
+        "variant": "9EX",
+        "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+        "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+        "match": true,
+        "sha256": "36a65f0122fc863aa2a68a3729305391f9847d9fffcb1ef66bff17c156bf6507"
+      }
+    ],
+    "prior_vram_timings": [
+      {
+        "variant": "INT",
+        "cpu": "z80",
+        "startup_ms": 1176.3183588975714,
+        "cpu_mean_ms": 192.92728545108346,
+        "insert_mean_ms": 213.58809523196592,
+        "backspace_mean_ms": 483.1812702452406,
+        "lines_mean_ms": 524.8274328283284,
+        "move_mean_ms": 719.8112412973516,
+        "numbers_mean_ms": 392.48293661159056,
+        "exit_mean_ms": 50.34978840420005
+      },
+      {
+        "variant": "INT",
+        "cpu": "r800",
+        "startup_ms": 1176.3183588975714,
+        "cpu_mean_ms": 58.23156295003961,
+        "insert_mean_ms": 57.61770659503347,
+        "backspace_mean_ms": 99.75274092098267,
+        "lines_mean_ms": 101.93786436692764,
+        "move_mean_ms": 126.58050341820237,
+        "numbers_mean_ms": 87.33322484654711,
+        "exit_mean_ms": 18.370537782502083
+      }
+    ]
+  }
+}

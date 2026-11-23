@@ -1,4 +1,4 @@
-"""Build both MSX-DOS2 COM variants using an installed SDCC toolchain."""
+"""Build mapper and internal/external V9968 MSX-DOS2 COM variants."""
 from pathlib import Path
 import argparse
 import os
@@ -12,6 +12,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--sdcc', default=os.environ.get('SDCC', 'sdcc'),
                     help='SDCC executable name or full path')
+    ap.add_argument('--variants', nargs='+', choices=['MAP', 'INT', 'EXT', '9IN', '9EX'], default=['MAP', '9IN', '9EX'])
     args = ap.parse_args()
     compiler = shutil.which(args.sdcc)
     if not compiler:
@@ -23,10 +24,12 @@ def main():
     (ROOT / 'build').mkdir(exist_ok=True)
     (ROOT / 'bin').mkdir(exist_ok=True)
     subprocess.run([compiler, '--version'], check=True, env=env)
-    for mode in ('INT', 'EXT'):
+    for mode in args.variants:
         prefix = Path('build') / mode
+        defines = {'MAP': ['-DMAPPER_ONLY'], 'INT': [], 'EXT': ['-DEXTERNAL'],
+                   '9IN': ['-DNATIVE_V9968'], '9EX': ['-DNATIVE_V9968', '-DEXTERNAL']}[mode]
         subprocess.run([compiler, '-mz80', '--no-std-crt0', '--code-loc', '0x103',
-                        '--data-loc', '0x6000', *(['-DEXTERNAL'] if mode == 'EXT' else []),
+                        '--data-loc', '0x6000', *defines,
                         'src/vimsx.c', '-o', prefix.with_suffix('.ihx')],
                        cwd=ROOT, env=env, check=True)
         image = bytearray(65536)
@@ -46,6 +49,9 @@ def main():
             elif record[3] != 1:
                 raise ValueError('Unexpected extended Intel HEX record')
         map_text = (ROOT / prefix.with_suffix('.map')).read_text()
+        data_size = int(re.search(r'^\s*([0-9A-F]+)\s+l__DATA\s', map_text, re.M)[1], 16)
+        if 0x6000 + data_size > 0x8000:
+            raise ValueError('Resident data overlaps the mapper/MSX-JE window')
         entry = int(re.search(r'^\s*([0-9A-F]+)\s+_main\s', map_text, re.M)[1], 16)
         if not 259 <= entry < end or end >= 0x6000:
             raise ValueError('Invalid COM entry or code size')
