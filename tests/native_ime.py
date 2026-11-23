@@ -10,6 +10,7 @@ ap.add_argument('--boot-disk',type=Path,required=True)
 ap.add_argument('--output',type=Path,required=True)
 ap.add_argument('--variant',choices=['MAP','INT','EXT','9IN','9EX'],required=True)
 ap.add_argument('--columns',choices=[40,80],type=int,default=40)
+ap.add_argument('--undo-roundtrip',action='store_true')
 args=ap.parse_args();root=Path(__file__).resolve().parents[1]
 w=args.output.resolve();w.mkdir(parents=True,exist_ok=False)
 r=args.runtime.resolve();profile=args.profile_dir.resolve();mode=args.variant
@@ -33,7 +34,11 @@ script+=['after time 94 {screenshot -raw {'+(w/'candidate.png').as_posix()+'}}']
 type_at(100,'\r');type_at(110,'ha,konnnichiha.');type_at(125,'\r');chord(135)
 type_at(140,'\x1b')
 script+=['after time 148 {screenshot -raw {'+(w/'sentence.png').as_posix()+'}}']
-type_at(155,':wq\r');script+=['after time 180 {exit}']
+if args.undo_roundtrip:
+ type_at(155,'u');type_at(165,'\x12')
+ type_at(175,':wq\r');script+=['after time 200 {exit}']
+else:
+ type_at(155,':wq\r');script+=['after time 180 {exit}']
 sc=w/'run.tcl';sc.write_text('\n'.join(script))
 extensions=['vimSX_DOS2'] if (profile/'user/extensions/vimSX_DOS2.xml').exists() else []
 if mode in ('EXT','9EX'):extensions.append('V9968_VRAM4M')

@@ -1,3 +1,24 @@
+# Undo/Redo validation — 2026-11-23
+
+Release v0.1.0-alpha.3 adds independent per-buffer Undo/Redo histories.
+The binary hashes and machine-readable results are in `validation-undo.json`.
+
+- 176 command cases: all five editions on R800; MAP on a 256KiB non-turbo-R Z80 profile; 9IN/9EX on 128KiB non-turbo-R Z80 profiles.
+- Insert grouping, newline/Backspace, Shift-JIS deletion, line deletion, paste, replacement, counts, redo branching, savepoint flags and independent buffer histories pass byte-exact saved-file checks.
+- All five editions pass history-ring wrap checks. MAP additionally passes old-transaction eviction and oversized-edit recovery checks.
+- Official BlueMSX+ v3.2.0-alpha: actual key input, exact before/undo and edited/redo screenshot equality, two-file saves and DOS return pass on all five editions.
+- ASCII full-width cursor restoration after delete/undo/redo matches ROM-derived pixels on all five editions; native KANJI passes the corresponding 16x16 checks on 9IN/9EX.
+- MSX-JE converts a Japanese sentence and saves the exact Shift-JIS bytes after Undo/Redo on 9IN.
+- Native 9IN/9EX preserve a 277,980-byte document across display changes and saving, from both 40- and 80-column startup.
+- MAP Z80 passes 24 incremental/full repaint comparisons at 40/80 columns.
+- Code and resident data stay below the mapper/MSX-JE window. Native glyphs are fetched on demand to fit Undo code and cursor backing storage; rendered glyph caching remains in VRAM.
+
+The 80-column benchmark compares alpha.2 and alpha.3 under the same managed openMSX build. Mean character-insertion time increases about 2–4% in these fixtures due to journaling. This is emulator time, not a hardware performance claim. Full timing results, including other operations, are recorded in JSON.
+
+An individual edit exceeding history capacity clears that buffer's history with a warning. See `UNDO-ja.md` for exact limits. No persistent undo, undo tree or crash recovery is implemented. No physical-hardware or broad Nextor certification is claimed.
+
+The following sections are historical results for earlier binary hashes.
+
 # Cursor validation — 2026-11-23
 
 All five builds were tested on the official BlueMSX+ v3.2.0-alpha x64 package.

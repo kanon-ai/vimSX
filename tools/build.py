@@ -25,7 +25,7 @@ def main():
     (ROOT / 'bin').mkdir(exist_ok=True)
     subprocess.run([compiler, '--version'], check=True, env=env)
     for mode in args.variants:
-        data_base = 0x6100 if mode in ('9IN', '9EX') else 0x6000
+        data_base = 0x6900 if mode in ('9IN', '9EX') else 0x6000
         prefix = Path('build') / mode
         defines = {'MAP': ['-DMAPPER_ONLY'], 'INT': [], 'EXT': ['-DEXTERNAL'],
                    '9IN': ['-DNATIVE_V9968'], '9EX': ['-DNATIVE_V9968', '-DEXTERNAL']}[mode]

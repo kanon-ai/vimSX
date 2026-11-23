@@ -9,11 +9,13 @@ typedef unsigned long Pos;
 #define BASE 0x40000UL
 #ifdef MAPPER_ONLY
 static Pos storageLimit;
+static u16 undoMask;
 #define LIMIT storageLimit
 #define CLIP_BASE (storageLimit*2)
 #define FULL_MESSAGE "File exceeds available mapper RAM"
 #define READ_MESSAGE "Cannot read file (or mapper full)"
 #else
+#define undoMask 65535u
 #define LIMIT 0x100000UL
 #define CLIP_BASE 0x200000UL
 #define FULL_MESSAGE "File limit: 1 MiB"
@@ -40,7 +42,7 @@ typedef struct {
 static Document documents[2];
 static char message[40];
 static char path[64],command[80],pattern[80];
-static u8 line[130],buf[256],width;
+static u8 buf[256],width;
 static void dos(void) __naked {
  __asm
  push ix
@@ -72,7 +74,13 @@ __sfr __at(0x98) videoData;
 __sfr __at(0x99) videoCtrl;
 #endif
 static u8 graphics,gx,gy,escape,foreground,background,bodyRows,gutter;
-static u8 font[2048],cursorVisible;
+#ifdef NATIVE_V9968
+static u8 font[8];
+static u16 fontAddress;
+#else
+static u8 font[2048];
+#endif
+static u8 cursorVisible;
 static u8 cursorPixels[128],cursorBytes,cursorRows,cursorBlock;
 static u8 at(Pos p);
 static u8 lead(u8 c);
@@ -120,8 +128,38 @@ static void readFont(void) __naked {
  pop de
  ld h,a
  ld l,e
+ __endasm;
+#ifdef NATIVE_V9968
+ __asm
+ ld (_fontAddress),hl
+ pop iy
+ pop ix
+ ret
+ __endasm;
+}
+/* Only cache misses need BIOS glyph bytes; rendered glyphs remain in VRAM. */
+static void readGlyph(u8 c) __naked {
+ c;
+ __asm
+ push ix
+ push iy
+ ld l,a
+ ld h,#0
+ add hl,hl
+ add hl,hl
+ add hl,hl
+ ld de,(_fontAddress)
+ add hl,de
+ ld de,#_font
+ ld bc,#8
+ __endasm;
+#else
+ __asm
  ld de,#_font
  ld bc,#2048
+ __endasm;
+#endif
+ __asm
 001$:
  push hl
  push de
@@ -251,15 +289,22 @@ static void drawCharCore(u8 c) {
   if(glyphValid[c] && glyphColors[c]==(foreground<<4|background))goto cachedGlyph;
   gx=c%width;gy=atlasY/CELL_H+c/width;a=cellAddress();
  }
+ if(!kanji || c<32 || c>126)readGlyph(c);
 #endif
  for(y=0;y<CELL_H;y++,a+=videoStride){
 #ifdef NATIVE_V9968
   if(kanji){
    if(c>=32 && c<=126)bits=y>=2 && y<14?ankFont[c-32][y-2]:0;
-   else bits=y>=4 && y<12?font[(u16)c*8+y-4]:0;
+   else bits=y>=4 && y<12?font[y-4]:0;
   }else
 #endif
-  bits=font[(u16)c*8+y];
+  bits=font[
+#ifdef NATIVE_V9968
+   y
+#else
+   (u16)c*8+y
+#endif
+  ];
   /* Printable ASCII already fits in five dots plus one spacing dot.
      Preserve its strokes; only condense the wider non-ASCII BIOS glyphs. */
   if(CELL_W==6 && (c<32 || c>126))
@@ -452,8 +497,9 @@ static void changeRange(Pos end){
  else{if(cursor<changedFrom)changedFrom=cursor;if(end>changedTo)changedTo=end;}
  textChanged=1;
 }
-static void add(u8 c){if(cursor<numberedFrom)numberedFrom=0;gap();if(left<right){changeRange(cursor+1);set(left,c);if(c==10){lineCount++;changedLine=1;}left++;cursor++;dirty=1;}}
-static void del(Pos end){Pos p;changeRange(end);for(p=cursor;p<end;p++)if(at(p)==10){lineCount--;changedLine=1;}if(cursor<numberedFrom)numberedFrom=0;gap();right+=end-cursor;dirty=1;}
+static void historyLog(u8 kind,u8 c);
+static void add(u8 c){if(cursor<numberedFrom)numberedFrom=0;gap();if(left<right){historyLog(1,c);changeRange(cursor+1);set(left,c);if(c==10){lineCount++;changedLine=1;}left++;cursor++;dirty=1;}}
+static void del(Pos end){Pos p;u8 c;changeRange(end);for(p=cursor;p<end;p++){c=at(p);historyLog(2,c);if(c==10){lineCount--;changedLine=1;}}if(cursor<numberedFrom)numberedFrom=0;gap();right+=end-cursor;dirty=1;}
 #define BODY_ROWS 23
 static u8 painted[BODY_ROWS][81],rowText[81],repaint;
 #ifdef NATIVE_V9968
@@ -467,6 +513,7 @@ static Pos viewLength;
 static u8 numbers;
 static Pos rowStarts[BODY_ROWS];
 static void note(const char *s){strcpy(message,s);repaint=1;}
+#include "undo.h"
 static void remember(void){
  Document *d=&documents[activeBuffer];
  d->used=1;d->left=left;d->right=right;d->cursor=cursor;d->top=top;
@@ -816,7 +863,7 @@ static u8 file(u8 save){
   if(!save)for(i=0;i<amount;i++){if(buf[i]==13)continue;if(left==right){fileError=1;bad=1;break;}set(left,buf[i]);if(buf[i]==10)lineCount++;left++;}
   if(bad)break;
  }
- h=handle;fn=0x45;dos();if(!bad&&!err){dirty=0;return 1;}if(err)fileError=err;return 0;
+ h=handle;fn=0x45;dos();if(!bad&&!err){dirty=0;if(!save)historyReset();historySaved();return 1;}if(err)fileError=err;return 0;
 }
 static u8 samePath(const char *a,const char *b){
  u8 x,y;
@@ -1025,6 +1072,7 @@ void main(void){
  if(!mapperInit()){str("vimSX requires 256KB mapper RAM and free segments.\r\n");return;}
 #endif
  memset(documents,0,sizeof(documents));activeBuffer=0;bufferBase=clipLength=0;clipLines=0;message[0]=0;
+ memset(histories,0,sizeof(histories));histories[0].valid=histories[1].valid=1;historyMute=historyRecording=historyOverflow=0;
  memset(tags,255,sizeof(tags));memset(changed,0,sizeof(changed));left=cursor=top=0;right=LIMIT;dirty=ins=kanji=commandKeys=pending=0;pattern[0]=0;
 #ifndef MAPPER_ONLY
  graphics=cursorVisible=0;
@@ -1046,11 +1094,13 @@ void main(void){
  if(loadFailed)goto done;
  remember();
  for(;;){display();commandKeys=!ins;k=key();commandKeys=0;if(*message){message[0]=0;repaint=1;}
+  if(!ins)historyBegin();
   if(k>=28&&k<=31)k="lhkj"[k-28];
-  else if(ins){if(k==27){ins=0;if(cursor>bol(cursor))cursor=prev(cursor);}else if(k==8&&cursor){a=cursor;cursor=prev(cursor);del(a);}else if(k==13)add(10);else if(k>=32){if(lead(k)){u8 trail=key();if(right-left>=2){add(k);add(trail);}}else add(k);}continue;}
+  else if(ins){if(k==27){ins=0;if(cursor>bol(cursor))cursor=prev(cursor);historyCommit();}else if(k==8&&cursor){a=cursor;cursor=prev(cursor);del(a);}else if(k==13)add(10);else if(k>=32){if(lead(k)){u8 trail=key();if(right-left>=2){add(k);add(trail);}}else add(k);}continue;}
   if(k>='0'&&k<='9'&&(k!='0'||count)){if(count<1000)count=count*10+k-'0';continue;}
   repeat=count?count:1;count=0;
   switch(k){
+  case 'u':case 18:do{historyApply(k==18);}while(--repeat);break;
   case 'h':if(cursor>bol(cursor))cursor=prev(cursor);break;
   case 'l':a=step(cursor);if(a<eol(cursor)||(ins&&a==eol(cursor)))cursor=a;break;
   case 'j':case 'k':a=bol(cursor);col=cursor-a;b=eol(cursor);if(k=='j'){if(b>=length())break;a=b+1;}else if(a)a=bol(a-1);else break;
@@ -1068,6 +1118,7 @@ void main(void){
   case '/':input('/');if(*command)strcpy(pattern,command);search();break;
   case 'n':search();break;
   case ':':input(':');
+   if(option("undo")||option("redo")){historyApply(option("redo"));break;}
    if(!strcmp(command,"q!"))goto done;
    if(!strcmp(command,"q")){if(!unsaved())goto done;note("Unsaved file: use :wa or :q!");}
    else if(!strcmp(command,"w")||!strcmp(command,"wq")){
@@ -1100,6 +1151,7 @@ void main(void){
    else if(option("kanji"))changeMode(1);
    break;
   }
+  if(!ins)historyCommit();
  }
  done:
 #ifdef NATIVE_V9968

@@ -99,7 +99,8 @@ static u8 mapperInit(void){
 #ifdef MAPPER_ONLY
  /* Three equal regions plus a spare segment for linewise yank's final LF. */
  if(mapperCount<4)return 0;
- storageLimit=(Pos)((mapperCount-1)/3)<<14;
+ storageLimit=(Pos)((mapperCount-(mapperCount>=5?2:1))/3)<<14;
+ undoMask=mapperCount>=5?2047:1023;
 #endif
  return mapperCount!=0;
 }
