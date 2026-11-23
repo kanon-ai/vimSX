@@ -1,10 +1,80 @@
+## 2026-11-23 incremental row-tail optimization
+
+MAP/INT/EXT now skip redundant blank-tail clearing and limit ASCII deletion
+clears to the previous row end. See `PERFORMANCE-20261123-ja.md` and
+`validation-performance.json` for emulator-time comparisons, matching COM
+hashes, incremental/full-repaint VRAM comparisons and regression results.
+The first-cell fix below remains included. VI9IN/VI9EX binaries are unchanged.
+
+## 2026-11-23 first-cell correction
+
+The current MAP/INT/EXT binaries fix DOS Kanji first-cell erasure by limiting
+ASCII margin cleanup to graphics mode. See `FIRST-CELL-FIX-ja.md` and
+`validation-first-cell.json` for before/after pixel checks, saved-byte checks,
+BlueMSX+ regression, and R800 timing. VI9IN/VI9EX COM bytes are unchanged.
+Older validation records below identify their tested builds by hash.
+The corrected 4MB openMSX validation is described in `FIL-COMPATIBILITY-ja.md`.
+
 # Validation — 2026-11-22; CPU compatibility update 2026-11-23
 
 This is emulator evidence, not physical-hardware certification.
 
+## FIL emulator discrepancy isolated — 2026-11-23
+
+The custom openMSX used below still tests R#21 bit6 for FIL, while the
+target RTL, vimSX and the BlueMSX+ reference implementation use R#20 bit5.
+Internal and external diagnostic runs prove that toggling R#20 bit5 leaves
+the image pixel-identical, while toggling the old R#21 bit6 changes it.
+Restoring the registers restores the original image exactly. Neither COM
+nor emulator files were patched. This is a register-specification mismatch,
+not a claim that openMSX generally cannot display high-resolution graphics.
+See [the detailed Japanese report](FIL-COMPATIBILITY-ja.md).
+Native FIL visual acceptance on this openMSX remains unavailable.
+
+## KANJI at both DOS widths — 2026-11-23 follow-up
+
+The current follow-up binaries and evidence are recorded in
+`validation-kanji80.json`. The earlier sections below describe earlier
+checkpoints, not the hashes of this follow-up build.
+
+MAP/INT/EXT now select the DOS Kanji driver's narrow or interlaced wide
+mode from the last ASCII width. The driver receives LINL40 explicitly.
+The separator and left-margin cleanup use the BIOS R#0/R#9 shadows and
+write both interlace fields. SCRMOD alone was insufficient: the driver
+can leave it at zero while displaying SCREEN 7. The usable text areas
+are 31 half-width cells by 10 rows at 256x212, and 63 by 21 at 512x424.
+This does not mean 80 half-width Kanji-mode cells. ASCII remains 40/80.
+Direct exit from KANJI also restores the original DOS width, even after
+changing to the opposite width inside the editor.
+
+VI9IN/VI9EX retain their existing 512x424 FIL renderer, 60 half-width
+cells by 23 rows and dedicated Latin font. Their COM files are unchanged.
+All five editions' narrow/wide KANJI screens were inspected in live
+BlueMSX+ windows, including Japanese glyphs, font proportions and the
+separator. API-only interlace captures are not used to assess font quality.
+Geometry checks also cover startup widths, numbers, colors, reversible
+editing, save, ASCII restoration and direct KANJI exit. MSX-JE conversion
+checks compare the saved Shift-JIS bytes of `今晩は、こんにちは。`.
+
+Additional regression exercises exact-width rows, Japanese boundaries,
+Enter/Backspace, scrolling, 900-line cross-document copy/cut/paste and
+277,980-byte VRAM documents across repeated mode changes. The evidence
+file distinguishes the renderer regression checkpoint from the final
+DOS-exit-only adjustment. Each record carries its tested binary hash.
+
+The DOS-driver KANJI renderer still has noticeable scrolling latency;
+this update is a geometry/restoration correction, not a scrolling
+performance improvement. A 29-move wide-KANJI test exceeded its initial
+20-emulated-second wait; allowing completion passed the row and save
+assertions. Several sandboxed emulator runs completed the editor's save
+but terminated with Windows status 0xC0000008. Those runs are not counted
+as passes; host-environment reruns require normal emulator termination.
+BlueMSX+ uses 100% CPU/VDP settings and isolated review disks. No emulator
+or ROM patch was made. Physical hardware remains unverified.
+
 ## Exact-width wrapping and mode-independent VRAM storage — 2026-11-23
 
-The latest local binaries and results are recorded in `validation-wrap.json`.
+The earlier wrap/storage checkpoint is recorded in `validation-wrap.json`.
 Replace the previous MODE80 V9968 binaries: that build could corrupt documents
 larger than the caches when switching display modes and subsequently saving.
 The correction does not repair files already saved with damaged contents.

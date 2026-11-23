@@ -8,7 +8,8 @@ ap.add_argument('--runtime',type=Path,required=True)
 ap.add_argument('--profile-dir',type=Path,required=True)
 ap.add_argument('--boot-disk',type=Path,required=True)
 ap.add_argument('--output',type=Path,required=True)
-ap.add_argument('--variant',choices=['MAP','9IN','9EX'],required=True)
+ap.add_argument('--variant',choices=['MAP','INT','EXT','9IN','9EX'],required=True)
+ap.add_argument('--columns',choices=[40,80],type=int,default=40)
 args=ap.parse_args();root=Path(__file__).resolve().parents[1]
 w=args.output.resolve();w.mkdir(parents=True,exist_ok=False)
 r=args.runtime.resolve();profile=args.profile_dir.resolve();mode=args.variant
@@ -24,7 +25,9 @@ def type_at(t,text):script.append('after time '+str(t)+' {type_via_keybuf [binar
 def chord(t):
  script.append('after time '+str(t)+' {keymatrixdown 6 2;keymatrixdown 8 1}')
  script.append('after time '+str(t+.2)+' {keymatrixup 8 1;keymatrixup 6 2}')
-type_at(25,'VI'+mode+' GREET.TXT\r');type_at(45,':kanji\r');type_at(65,'i')
+type_at(25,'VI'+mode+' GREET.TXT\r')
+if args.columns==80:type_at(32,':mode80\r')
+type_at(45,':kanji\r');type_at(65,'i')
 chord(75);type_at(80,'konnbann');type_at(90,' ')
 script+=['after time 94 {screenshot -raw {'+(w/'candidate.png').as_posix()+'}}']
 type_at(100,'\r');type_at(110,'ha,konnnichiha.');type_at(125,'\r');chord(135)
@@ -33,7 +36,7 @@ script+=['after time 148 {screenshot -raw {'+(w/'sentence.png').as_posix()+'}}']
 type_at(155,':wq\r');script+=['after time 180 {exit}']
 sc=w/'run.tcl';sc.write_text('\n'.join(script))
 extensions=['vimSX_DOS2'] if (profile/'user/extensions/vimSX_DOS2.xml').exists() else []
-if mode=='9EX':extensions.append('V9968_VRAM4M')
+if mode in ('EXT','9EX'):extensions.append('V9968_VRAM4M')
 p=subprocess.run([r/'openmsx.exe','-control','stdio','-machine','vimSX_CPU_TEST',
     *[s for e in extensions for s in ('-ext',e)],'-diska',disk,'-script',sc],
     input=b'<openmsx-control>\n',capture_output=True,timeout=90,
@@ -42,6 +45,6 @@ p=subprocess.run([r/'openmsx.exe','-control','stdio','-machine','vimSX_CPU_TEST'
 ns={'Path':Path};source=(root/'tests/regression.py').read_text(encoding='utf8')
 exec(source[source.index('def files('):source.index('for mode in')],ns)
 actual=ns['files'](disk).get('GREET.TXT');expected='今晩は、こんにちは。'.encode('cp932')
-(w/'result.json').write_text(json.dumps(dict(variant=mode,actual=actual.hex() if actual else None,expected=expected.hex(),match=actual==expected,sha256=hashlib.sha256(com.read_bytes()).hexdigest()),indent=2))
+(w/'result.json').write_text(json.dumps(dict(variant=mode,columns=args.columns,actual=actual.hex() if actual else None,expected=expected.hex(),match=actual==expected,sha256=hashlib.sha256(com.read_bytes()).hexdigest()),indent=2))
 assert actual==expected,actual
 print(mode,'MSX-JE conversion and saved bytes PASS')

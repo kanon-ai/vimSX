@@ -312,20 +312,26 @@ static void drawWide(u8 trail){
  }
 }
 /* Clear the remaining character cells one scanline at a time. */
-static void clearLineTail(void) __critical {
 #ifdef NATIVE_V9968
+static void clearLineTail(void) __critical {
  if(gx<width)nativeFill(gx*CELL_W+leftMargin,gy*CELL_H,(width-gx)*CELL_W,CELL_H,background*17);
  gx=width;
+}
 #else
- u8 y,n,count=(width-gx)*3,packed=background*17;
+/* No register argument crosses SDCC's __critical entry sequence. */
+static u8 clearEnd;
+static void clearLineCore(void) __critical {
+ u8 y,n,count=(clearEnd-gx)*3,packed=background*17;
  Pos addr=cellAddress();
  for(y=0;y<8;y++,addr+=videoStride){
   videoAddress(addr,64);
   for(n=0;n<count;n++)videoData=packed;
  }
- videoCtrl=0;videoCtrl=0x8e;gx=width;
-#endif
+ videoCtrl=0;videoCtrl=0x8e;gx=clearEnd;
 }
+static void clearLineTo(u8 end){clearEnd=end;clearLineCore();}
+static void clearLineTail(void){clearLineTo(width);}
+#endif
 static u8 lead(u8 c);
 static void put(u8 c){
  if(!graphics){arg=c;fn=2;dos();return;}
@@ -561,6 +567,7 @@ static Pos visualRow(Pos p,u8 *caret){
  }
  rowText[x]=0;return p;
 }
+#ifdef NATIVE_V9968
 /* One packed scanline in the reserved row, centred on the text area. */
 static void separator(void) __critical {
  u16 stride=graphics?videoStride:((*(u8*)0xfcaf==7)?256:128);
@@ -580,9 +587,44 @@ static void clearTopMargin(void) __critical {
  }
  videoCtrl=0;videoCtrl=0x8e;
 }
+#else
+/* DOS Kanji may leave SCRMOD=0; use the actual R#0/R#9 shadows. */
+static u16 consoleStride(void){return (*(u8*)0xf3df&14)==10?256:128;}
+static void separator(void) __critical {
+ u16 stride=graphics?videoStride:consoleStride();
+ u16 y=(u16)bodyRows*(graphics?8:16)+(graphics?4:8),n;
+ u8 fields=!graphics && (*(u8*)0xffe8&8)?2:1;
+ Pos a;
+ if(fields==2)y>>=1;
+ a=((Pos)y<<(stride==256?8:7))+(graphics?leftMargin/2:4);
+ do {
+  videoAddress(a,64);n=stride-(graphics?leftMargin:8);
+  while(n--)videoData=ink*17;
+  a+=0x10000UL;
+ }while(--fields);
+ videoCtrl=0;videoCtrl=0x8e;
+}
+static void clearTopMargin(void) __critical {
+ u8 y,i,fields=!graphics && (*(u8*)0xffe8&8)?2:1;
+ u16 stride=graphics?videoStride:consoleStride();Pos page=0;
+ /* DOS Kanji starts at x=0: its first glyph is not a margin. */
+ if(!graphics)return;
+ do {
+  for(y=0;y<8;y++){
+   videoAddress(page+((Pos)y<<(stride==256?8:7)),64);
+   for(i=0;i<(graphics?leftMargin/2:4);i++)videoData=paper*17;
+  }
+  page+=0x10000UL;
+ }while(--fields);
+ videoCtrl=0;videoCtrl=0x8e;
+}
+#endif
 static u8 statusIns,statusDirty;
 static void paintTextRow(u8 y){
  u8 i=0;
+#ifndef NATIVE_V9968
+ u8 oldEnd;
+#endif
  if(!repaint && !strcmp((char*)rowText,(char*)painted[y]))return;
  if(graphics && !repaint){
   while(rowText[i] && rowText[i]==painted[y][i]){
@@ -590,7 +632,21 @@ static void paintTextRow(u8 y){
    else i++;
   }
  }
- locate(i,y);for(;rowText[i];i++)put(rowText[i]);str("\033K");strcpy((char*)painted[y],(char*)rowText);
+ locate(i,y);for(;rowText[i];i++)put(rowText[i]);
+#ifndef NATIVE_V9968
+ /* The cached blank tail remains valid unless this row became shorter. */
+ if(repaint)str("\033K");
+ else{
+  oldEnd=strlen((char*)painted[y]);
+  if(i<oldEnd){
+   if(graphics)clearLineTo(oldEnd);
+   else str("\033K");
+  }
+ }
+#else
+ str("\033K");
+#endif
+ strcpy((char*)painted[y],(char*)rowText);
 }
 #ifdef NATIVE_V9968
 static void jePaintIfActive(void);
@@ -845,7 +901,10 @@ static void changeMode(u8 mode){
  if(kanji && !jeInit())note("MSX-JE not available");
 #else
  if(graphics){if(cursorVisible)caretLine(0);graphics=0;biosScreen(dosScreen);}
- selectMode(mode);kanji=consoleMode();
+ /* The driver derives its bitmap width from LINL40, not SCRMOD. */
+ *(u8*)0xf3ae=ascii80?80:40;
+ /* Wide Kanji uses full 16-dot glyphs across both interlace fields. */
+ selectMode(mode?(ascii80?3:1):0);kanji=consoleMode();
  if(!kanji){
   biosScreen(wideScreen?7:5);
 #ifndef MAPPER_ONLY
@@ -1044,6 +1103,10 @@ void main(void){
 #endif
 #if !defined(MAPPER_ONLY) && !defined(EXTERNAL)
  reg(20,1);
+#endif
+#ifndef NATIVE_V9968
+ /* The Kanji driver also uses LINL40 when returning directly to DOS. */
+ *(u8*)0xf3ae=initialColumns;
 #endif
  memcpy((void*)0xf87f,savedFunctionKeys,160);FORCLR=dosInk;BAKCLR=dosPaper;BDRCLR=dosBorder;if(graphics){graphics=0;*(u8*)0xf3ae=initialColumns;biosScreen(dosScreen);}selectMode(initialMode);FORCLR=dosInk;BAKCLR=dosPaper;BDRCLR=dosBorder;if(fast)cpu(originalCPU&3);put(12);
  if(loadFailed)str(READ_MESSAGE "\r\n");

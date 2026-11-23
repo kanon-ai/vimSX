@@ -1,0 +1,395 @@
+{
+  "date": "2026-11-23",
+  "scope": "KANJI 40/80 geometry and DOS width restoration",
+  "binaries": [
+    {
+      "variant": "MAP",
+      "sha256": "25418a13b1d2470be5a86b963f0e380b16bd44dc6d74cd9e8b0ffe40f66743d4",
+      "bytes": 19245
+    },
+    {
+      "variant": "INT",
+      "sha256": "dfa2673e7e5dd63e133766b80d7c4d554d71cf667153c87acd29fe8107bce275",
+      "bytes": 17454
+    },
+    {
+      "variant": "EXT",
+      "sha256": "c84692f65dec04f9d74ae55eee6888393e6acd29f68db4f652844ce994ea4215",
+      "bytes": 17420
+    },
+    {
+      "variant": "9IN",
+      "sha256": "44a3363b0ea7e0b4d1f2283efcd2b2331ec5f3c667fd8c0c6767c276e4724985",
+      "bytes": 24126
+    },
+    {
+      "variant": "9EX",
+      "sha256": "686883e0fc3e6a9f0c2ad7bfd200cae4fa5b515634789b48addc78a967e9ea0f",
+      "bytes": 24283
+    }
+  ],
+  "source_files": {
+    "src/ank_font.h": "77a2fc36ada8e96c345d9821962d9d1a463eb64a93d93a47f2b180289206e3f1",
+    "src/mapper.h": "b787f85e5a64bf8238dbd7c0c280eb726bab8fe0d25003a24aebed7ffe3caf8c",
+    "src/mapper_cache.h": "9edec9789d0ea096e2c415e575a4ba5820c871ff21832892b6ecc9982d06f295",
+    "src/msxje.h": "556003e464f86faf0ce7e79a391a5ec5cfe1286463eae9f1141e19e015e334e5",
+    "src/v9968_draw.h": "3a020f2342a5ffd74448136dbbf6fedc3e85a3ffeed6c43a19c3abcb0fd58f6c",
+    "src/vimsx.c": "5d4ef42bb859cf2a7a306826703a3715cccd4d6160506aca27a55352570b02ff"
+  },
+  "final_geometry_and_direct_kanji_exit": [
+    {
+      "variant": "MAP",
+      "initial_columns": 40,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "25418a13b1d2470be5a86b963f0e380b16bd44dc6d74cd9e8b0ffe40f66743d4"
+    },
+    {
+      "variant": "MAP",
+      "initial_columns": 80,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "25418a13b1d2470be5a86b963f0e380b16bd44dc6d74cd9e8b0ffe40f66743d4"
+    },
+    {
+      "variant": "INT",
+      "initial_columns": 40,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "dfa2673e7e5dd63e133766b80d7c4d554d71cf667153c87acd29fe8107bce275"
+    },
+    {
+      "variant": "INT",
+      "initial_columns": 80,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "dfa2673e7e5dd63e133766b80d7c4d554d71cf667153c87acd29fe8107bce275"
+    },
+    {
+      "variant": "EXT",
+      "initial_columns": 40,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "c84692f65dec04f9d74ae55eee6888393e6acd29f68db4f652844ce994ea4215"
+    },
+    {
+      "variant": "EXT",
+      "initial_columns": 80,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "c84692f65dec04f9d74ae55eee6888393e6acd29f68db4f652844ce994ea4215"
+    },
+    {
+      "variant": "9IN",
+      "initial_columns": 40,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "44a3363b0ea7e0b4d1f2283efcd2b2331ec5f3c667fd8c0c6767c276e4724985"
+    },
+    {
+      "variant": "9IN",
+      "initial_columns": 80,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "44a3363b0ea7e0b4d1f2283efcd2b2331ec5f3c667fd8c0c6767c276e4724985"
+    },
+    {
+      "variant": "9EX",
+      "initial_columns": 40,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "686883e0fc3e6a9f0c2ad7bfd200cae4fa5b515634789b48addc78a967e9ea0f"
+    },
+    {
+      "variant": "9EX",
+      "initial_columns": 80,
+      "kanji_40_80_geometry_edit_restore": true,
+      "sha256": "686883e0fc3e6a9f0c2ad7bfd200cae4fa5b515634789b48addc78a967e9ea0f"
+    }
+  ],
+  "final_msxje": [
+    {
+      "variant": "MAP",
+      "columns": 40,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "25418a13b1d2470be5a86b963f0e380b16bd44dc6d74cd9e8b0ffe40f66743d4"
+    },
+    {
+      "variant": "MAP",
+      "columns": 80,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "25418a13b1d2470be5a86b963f0e380b16bd44dc6d74cd9e8b0ffe40f66743d4"
+    },
+    {
+      "variant": "INT",
+      "columns": 40,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "dfa2673e7e5dd63e133766b80d7c4d554d71cf667153c87acd29fe8107bce275"
+    },
+    {
+      "variant": "INT",
+      "columns": 80,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "dfa2673e7e5dd63e133766b80d7c4d554d71cf667153c87acd29fe8107bce275"
+    },
+    {
+      "variant": "EXT",
+      "columns": 40,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "c84692f65dec04f9d74ae55eee6888393e6acd29f68db4f652844ce994ea4215"
+    },
+    {
+      "variant": "EXT",
+      "columns": 80,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "c84692f65dec04f9d74ae55eee6888393e6acd29f68db4f652844ce994ea4215"
+    },
+    {
+      "variant": "9IN",
+      "columns": 40,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "44a3363b0ea7e0b4d1f2283efcd2b2331ec5f3c667fd8c0c6767c276e4724985"
+    },
+    {
+      "variant": "9IN",
+      "columns": 80,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "44a3363b0ea7e0b4d1f2283efcd2b2331ec5f3c667fd8c0c6767c276e4724985"
+    },
+    {
+      "variant": "9EX",
+      "columns": 40,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "686883e0fc3e6a9f0c2ad7bfd200cae4fa5b515634789b48addc78a967e9ea0f"
+    },
+    {
+      "variant": "9EX",
+      "columns": 80,
+      "actual": "8da194d382cd814182b182f182c982bf82cd8142",
+      "expected": "8da194d382cd814182b182f182c982bf82cd8142",
+      "match": true,
+      "sha256": "686883e0fc3e6a9f0c2ad7bfd200cae4fa5b515634789b48addc78a967e9ea0f"
+    }
+  ],
+  "final_bluemsx": [
+    {
+      "variant": "MAP",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "25418a13b1d2470be5a86b963f0e380b16bd44dc6d74cd9e8b0ffe40f66743d4"
+    },
+    {
+      "variant": "INT",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "dfa2673e7e5dd63e133766b80d7c4d554d71cf667153c87acd29fe8107bce275"
+    },
+    {
+      "variant": "EXT",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "c84692f65dec04f9d74ae55eee6888393e6acd29f68db4f652844ce994ea4215"
+    },
+    {
+      "variant": "9IN",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "44a3363b0ea7e0b4d1f2283efcd2b2331ec5f3c667fd8c0c6767c276e4724985"
+    },
+    {
+      "variant": "9EX",
+      "mode_roundtrip_pixels_match": true,
+      "saved_bytes_match": true,
+      "dos_commands_after_wq_and_q": true,
+      "sha256": "686883e0fc3e6a9f0c2ad7bfd200cae4fa5b515634789b48addc78a967e9ea0f"
+    }
+  ],
+  "live_visual_review": {
+    "variants": [
+      "MAP",
+      "INT",
+      "EXT",
+      "9IN",
+      "9EX"
+    ],
+    "ascii_selections": [
+      40,
+      80
+    ],
+    "japanese_glyphs": true,
+    "separator_width_and_position": true,
+    "native_com_unchanged": true
+  },
+  "regression_checkpoint": {
+    "note": "Renderer regression checkpoint before the final LINL40-on-exit restoration. Each record retains its original tested hash.",
+    "mapper_edit_and_900_line_exchange": [
+      {
+        "variant": "MAP",
+        "case": "exchange",
+        "saved_bytes_match": true,
+        "sha256": "96ed9519679988a28b8139e9b558629adb75e21393360b34b855877d8a394296"
+      },
+      {
+        "variant": "MAP",
+        "case": "new",
+        "saved_bytes_match": true,
+        "sha256": "96ed9519679988a28b8139e9b558629adb75e21393360b34b855877d8a394296"
+      },
+      {
+        "variant": "MAP",
+        "case": "bulk-modes",
+        "saved_bytes_match": true,
+        "sha256": "96ed9519679988a28b8139e9b558629adb75e21393360b34b855877d8a394296"
+      }
+    ],
+    "legacy_277980_byte_storage": [
+      {
+        "variant": "INT",
+        "machine": "Panasonic_FS-A1ST",
+        "initial_columns": 40,
+        "document_bytes": 277980,
+        "saved_bytes_match": true,
+        "sha256": "baec1201839310e1900347c72ec7b4f4c3765520d065c2fe977f68faf9dc5957"
+      },
+      {
+        "variant": "INT",
+        "machine": "Panasonic_FS-A1ST",
+        "initial_columns": 80,
+        "document_bytes": 277980,
+        "saved_bytes_match": true,
+        "sha256": "baec1201839310e1900347c72ec7b4f4c3765520d065c2fe977f68faf9dc5957"
+      },
+      {
+        "variant": "EXT",
+        "machine": "Panasonic_FS-A1ST",
+        "initial_columns": 40,
+        "document_bytes": 277980,
+        "saved_bytes_match": true,
+        "sha256": "0c8a68975b0452006b657ee264afe5d016fa87d2bdd0c9ceb3ee48aee472fec6"
+      },
+      {
+        "variant": "EXT",
+        "machine": "Panasonic_FS-A1ST",
+        "initial_columns": 80,
+        "document_bytes": 277980,
+        "saved_bytes_match": true,
+        "sha256": "0c8a68975b0452006b657ee264afe5d016fa87d2bdd0c9ceb3ee48aee472fec6"
+      }
+    ],
+    "mapper_ascii_and_narrow_kanji_wrap": [
+      {
+        "variant": "MAP",
+        "layouts": 6,
+        "exact_width_newline_eof_and_double_width": true,
+        "japanese_boundary": true,
+        "numbered": true,
+        "reversible_end_edits": true,
+        "scroll_both_directions": true,
+        "saved_bytes_match": true,
+        "sha256": "96ed9519679988a28b8139e9b558629adb75e21393360b34b855877d8a394296"
+      }
+    ],
+    "mapper_wide_kanji_wrap": [
+      {
+        "variant": "MAP",
+        "layouts": 2,
+        "tested_layouts": [
+          "kanji80"
+        ],
+        "exact_width_newline_eof_and_double_width": true,
+        "japanese_boundary": true,
+        "numbered": true,
+        "reversible_end_edits": true,
+        "scroll_both_directions": true,
+        "saved_bytes_match": true,
+        "sha256": "96ed9519679988a28b8139e9b558629adb75e21393360b34b855877d8a394296"
+      }
+    ],
+    "legacy_wide_kanji_wrap": [
+      {
+        "variant": "INT",
+        "layouts": 2,
+        "exact_width_newline_eof_and_double_width": true,
+        "japanese_boundary": true,
+        "numbered": true,
+        "reversible_end_edits": true,
+        "scroll_both_directions": true,
+        "saved_bytes_match": true,
+        "sha256": "baec1201839310e1900347c72ec7b4f4c3765520d065c2fe977f68faf9dc5957",
+        "tested_layouts": [
+          "kanji80"
+        ]
+      },
+      {
+        "variant": "EXT",
+        "layouts": 2,
+        "exact_width_newline_eof_and_double_width": true,
+        "japanese_boundary": true,
+        "numbered": true,
+        "reversible_end_edits": true,
+        "scroll_both_directions": true,
+        "saved_bytes_match": true,
+        "sha256": "0c8a68975b0452006b657ee264afe5d016fa87d2bdd0c9ceb3ee48aee472fec6",
+        "tested_layouts": [
+          "kanji80"
+        ]
+      }
+    ]
+  },
+  "review_commands": [
+    {
+      "variant": "MAP",
+      "command": "outputs\\VIMSX-CHECK-MAP.cmd",
+      "com_sha256": "25418a13b1d2470be5a86b963f0e380b16bd44dc6d74cd9e8b0ffe40f66743d4",
+      "disk_sha256": "2c0eca84316ba52615f0be94720f92fdb59af5e143664075af678c2c0cb7f846",
+      "disk_contents_verified": true
+    },
+    {
+      "variant": "INT",
+      "command": "outputs\\VIMSX-CHECK-INT.cmd",
+      "com_sha256": "dfa2673e7e5dd63e133766b80d7c4d554d71cf667153c87acd29fe8107bce275",
+      "disk_sha256": "79a78a1fa5189ab6eb18dbf0ef3782411cd7ca5dc19865ca5c1313b6d4661f76",
+      "disk_contents_verified": true
+    },
+    {
+      "variant": "EXT",
+      "command": "outputs\\VIMSX-CHECK-EXT.cmd",
+      "com_sha256": "c84692f65dec04f9d74ae55eee6888393e6acd29f68db4f652844ce994ea4215",
+      "disk_sha256": "c76a91f325db9228ea00e40416e932cf4a12456b16b721cc0f1ec20c229f4789",
+      "disk_contents_verified": true
+    },
+    {
+      "variant": "9IN",
+      "command": "outputs\\VIMSX-CHECK-9IN.cmd",
+      "com_sha256": "44a3363b0ea7e0b4d1f2283efcd2b2331ec5f3c667fd8c0c6767c276e4724985",
+      "disk_sha256": "1e3092ded8c1f91f84c115a3de10cc41604b65bcfb4fc7c85e9c4c3ca9ee3460",
+      "disk_contents_verified": true
+    },
+    {
+      "variant": "9EX",
+      "command": "outputs\\VIMSX-CHECK-9EX.cmd",
+      "com_sha256": "686883e0fc3e6a9f0c2ad7bfd200cae4fa5b515634789b48addc78a967e9ea0f",
+      "disk_sha256": "f9ca45ec0b1d7f32a40ce7996035d9f2798f1362d835cd71b18bfbb3559554d5",
+      "disk_contents_verified": true
+    }
+  ],
+  "limitations": [
+    "Emulator evidence only; no physical hardware verification.",
+    "DOS-driver KANJI scrolling remains slow; this is not a performance improvement.",
+    "Sandboxed openMSX exits with 0xC0000008 were rejected; host reruns completed normally.",
+    "GitHub and existing everyday boot disks were not updated in this review step."
+  ]
+}

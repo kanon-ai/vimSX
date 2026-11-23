@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-23",
+  "compiler": "SDCC 4.6.0 #16555",
+  "all_five_clean_rebuilds_match_tested_binaries": true,
+  "binaries": {
+    "9EX": "686883e0fc3e6a9f0c2ad7bfd200cae4fa5b515634789b48addc78a967e9ea0f",
+    "9IN": "44a3363b0ea7e0b4d1f2283efcd2b2331ec5f3c667fd8c0c6767c276e4724985",
+    "EXT": "a02894bfb1a9e24fe0933d986ff3bb5e13c5f363fc263bee8c2918d4bc80d540",
+    "INT": "33490d098567958c08bb0c77395f193fbb3ec71d7a08d6c1163c946905b368a0",
+    "MAP": "ca6c2fbb1b5ae47233f983978630a9ff7a590c98d7c1ab2e1b0fd4230a3b9e43"
+  },
+  "source_files": {
+    "src/ank_font.h": "98f6fa3ac864fb76b4d212764619b271f94b6a586c937763fd15f18b2a82c8bd",
+    "src/mapper.h": "b787f85e5a64bf8238dbd7c0c280eb726bab8fe0d25003a24aebed7ffe3caf8c",
+    "src/mapper_cache.h": "9edec9789d0ea096e2c415e575a4ba5820c871ff21832892b6ecc9982d06f295",
+    "src/msxje.h": "435e9a834efc8256ef22acf0b8750f6e34395c47eecde7c1b2bd781551819275",
+    "src/v9968_draw.h": "542b2ff220f7f3d2770a0278ec9ee6c654559cab5269e7ca7d80d241efb33ec0",
+    "src/vimsx.c": "4fd5d32b5e87e32b051eac17ae8e04f975ef7aca278884a8afd9b0193f8e23b1"
+  },
+  "performance_and_regression_report": "docs/validation-performance.json",
+  "physical_hardware_tested": false
+}

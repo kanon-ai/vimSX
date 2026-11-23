@@ -13,6 +13,7 @@ ap.add_argument('--boot-disk',type=Path,required=True)
 ap.add_argument('--profile-root',type=Path,required=True)
 ap.add_argument('--output',type=Path,required=True)
 ap.add_argument('--variants',nargs='+',required=True)
+ap.add_argument('--layouts',nargs='+',choices=['40','80','kanji','kanji80'],default=['40','80','kanji','kanji80'])
 ap.add_argument('--headless',action='store_true',help='Inspect row cache and saved bytes without the host renderer or screenshots')
 ap.add_argument('--verify-only',action='store_true',help='Recheck retained captures and disk from the same COM binary without rerunning the emulator')
 args=ap.parse_args();root=Path(__file__).resolve().parents[1];r=args.runtime.resolve()
@@ -35,13 +36,14 @@ for mode in args.variants:
  script+=['set wrapShot {};set wrapImage 0',
   'debug set_bp '+str(key_address)+' {$wrapShot ne "" && [binary encode hex [debug read_block memory '+str(key_address)+' 12]] eq "'+key_signature+'"} {set f [open $wrapShot w];puts $f [list [debug read memory '+str(addr['width'])+'] [debug read memory '+str(addr['bodyRows'])+'] [debug read memory '+str(addr['gutter'])+'] [debug read memory '+str(addr['gx'])+'] [debug read memory '+str(addr['gy'])+'] [binary encode hex [debug read_block memory '+str(addr['painted'])+' 1863]]];close $f;if {'+('0' if args.headless else '$wrapImage')+'} {screenshot -raw [file rootname $wrapShot].png};set wrapShot {}}']
  fixture={};cases=[];scroll_cases=[]
- for layout,cols in [('40',40),('80',80),('kanji',60 if mode in ('9IN','9EX') else 31)]:
+ layouts=[(layout,cols) for layout,cols in [('40',40),('80',80),('kanji',60 if mode in ('9IN','9EX') else 31),('kanji80',60 if mode in ('9IN','9EX') else 63)] if layout in args.layouts]
+ for layout,cols in layouts:
   for numbered in [False,True]:
    width=cols-(4 if numbered else 0);name=f'W{len(cases)}.TXT'
    data=b'A'*width+b'\r\nB\r\n'+b'A'*(width*2)+b'\r\nC\r\n'+b'A'*(width-2)+'漢'.encode('cp932')+b'\r\nD\r\n'+b'Z'*width
    fixture[name]=data;(w/name).write_bytes(data)
    cases.append((name,layout,numbered,cols))
- for layout,cols in [('40',40),('80',80),('kanji',60 if mode in ('9IN','9EX') else 31)]:
+ for layout,cols in layouts:
   name=f'S{len(scroll_cases)}.TXT';data=b'\r\n'.join(f'{i:02d}'.encode()+b'A'*(cols-2) for i in range(30))
   fixture[name]=data;(w/name).write_bytes(data);scroll_cases.append((name,layout,cols))
  for f in [com,*[w/n for n in fixture]]:
@@ -50,7 +52,7 @@ for mode in args.variants:
  def operation(keys,label=None,check=False):
   global t
   # Legacy software rendering can take over 20 emulated seconds for 29 moves.
-  delay=50 if mode in ('INT','EXT') and label and label.startswith('scroll-') else 20
+  delay=60 if mode not in ('9IN','9EX') and label and label.startswith('scroll-') else 20
   script.append(f'after time {t} {{type_via_keybuf [binary format H* {keys.encode().hex()}]}}')
   if label:
    # DOS may temporarily map over editor RAM while polling. Inspect at the
@@ -60,7 +62,7 @@ for mode in args.variants:
  for i,(name,layout,numbered,cols) in enumerate(cases):
   operation('MODE 40\r')
   operation(f'VI{mode} {name}\r')
-  operation(':kanji\r' if layout=='kanji' else ':mode'+layout+'\r')
+  operation(':mode80\r:kanji\r' if layout=='kanji80' else ':kanji\r' if layout=='kanji' else ':mode'+layout+'\r')
   operation(':set number\r' if numbered else ':set nonumber\r',f'{i}-before',True)
   operation('A',f'{i}-insert')
   operation('X\b\r\b\x1b',f'{i}-after',True)
@@ -68,7 +70,7 @@ for mode in args.variants:
   observations.append((i,cols,numbered))
  for i,(name,layout,cols) in enumerate(scroll_cases):
   operation('MODE 40\r');operation(f'VI{mode} {name}\r')
-  operation(':kanji\r' if layout=='kanji' else ':mode'+layout+'\r')
+  operation(':mode80\r:kanji\r' if layout=='kanji80' else ':kanji\r' if layout=='kanji' else ':mode'+layout+'\r')
   operation('j'*29,f'scroll-{i}-down',True)
   operation('k'*29,f'scroll-{i}-up',True)
   operation(':wq\r')
@@ -85,7 +87,7 @@ for mode in args.variants:
   gutter=4 if numbered else 0
   for stage in ['before','after']:
    parts=(w/f'{i}-{stage}.json').read_text().split();values=[int(x,0) for x in parts[:5]];rows=bytes.fromhex(parts[5])
-   assert values[:3]==[cols,23 if mode in ('9IN','9EX') or cols in (40,80) else 10,gutter],(mode,i,stage,values)
+   assert values[:3]==[cols,23 if mode in ('9IN','9EX') or cols in (40,80) else 21 if cols==63 else 10,gutter],(mode,i,stage,values)
    for y,ch in enumerate(b'ABAACADZ'):
     assert rows[y*81+gutter]==ch,(mode,i,stage,y,rows[y*81:(y+1)*81])
    if numbered:
@@ -107,7 +109,7 @@ for mode in args.variants:
  assert files[com.name]==com.read_bytes(),(mode,'capture binary mismatch')
  for name,data in fixture.items():assert files.get(name)==data,(mode,name,'saved bytes changed')
  assert b'RETURNED' in files.get('RETURN.TXT',b''),(mode,'DOS return')
- results.append(dict(variant=mode,layouts=6,exact_width_newline_eof_and_double_width=True,
+ results.append(dict(variant=mode,layouts=len(cases),tested_layouts=args.layouts,exact_width_newline_eof_and_double_width=True,
                      japanese_boundary=True,numbered=True,reversible_end_edits=True,
                      scroll_both_directions=True,saved_bytes_match=True,sha256=hashlib.sha256(com.read_bytes()).hexdigest()))
  (args.output/'results.json').write_text(json.dumps(results,indent=2))

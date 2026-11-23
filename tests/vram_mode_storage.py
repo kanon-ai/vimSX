@@ -20,11 +20,11 @@ for mode in a.variants:
   listing=(root/'build'/f'{mode}.lst').read_text();sym={n:int(re.search(r'([0-9A-F]{8})\s+\d+ _'+n+':',listing)[1],16)+0x103 for n in ['main','key']}
   keys=b':mode80\r:kanji\r:mode40\r:mode80\r:kanji\r:ascii\r:wq\r'
   sig=com.read_bytes()[sym['key']-256:sym['key']-256+12].hex()
-  script=['set renderer none','set throttle off','set maxframeskip 10','set power on','catch {diskmanipulator delete diska AUTOEXEC.BAT}', 'set active 0;set idx 0', 'set keys [binary format H* '+keys.hex()+']']
+  script=['set renderer SDLGL-PP','set throttle off','set maxframeskip 10','set power on','catch {diskmanipulator delete diska AUTOEXEC.BAT}', 'set active 0;set idx 0', 'set keys [binary format H* '+keys.hex()+']']
   for f in [com,fixture]:script+=['catch {diskmanipulator delete diska '+f.name+'}','diskmanipulator import diska {'+f.as_posix()+'}']
   script+=['debug set_bp '+str(sym['main'])+' {[debug read memory 0x100]==195 && [debug read memory 0x101]=='+str(sym['main']&255)+' && [debug read memory 0x102]=='+str(sym['main']>>8)+'} {set active 1}',
    'debug set_bp '+str(sym['key'])+' {$active && [binary encode hex [debug read_block memory '+str(sym['key'])+' 12]] eq "'+sig+'"} {if {$idx<[string length $keys]} {set k [string index $keys $idx];incr idx;after time 0 [list type_via_keybuf $k]}}',
-   'debug set_bp 0 {$active} {set f [open {'+(w/'done.txt').as_posix()+'} w];puts $f $idx;close $f;exit}',
+   'debug set_bp 0 {$active} {set active 0;set f [open {'+(w/'done.txt').as_posix()+'} w];puts $f $idx;close $f;after time 1 {exit}}',
    'after time 25 {type_via_keybuf [binary format H* '+('MODE '+str(columns)+'\r').encode().hex()+']}',
    'after time 35 {type_via_keybuf [binary format H* '+('VI'+mode+' LARGE.TXT\r').encode().hex()+']}',
    'after time 1800 {set f [open {'+(w/'timeout.txt').as_posix()+'} w];puts $f [list $active $idx [reg PC]];close $f;exit}']

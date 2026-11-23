@@ -1,0 +1,148 @@
+{
+  "issue": "DOS Kanji first glyph erased by graphics margin cleanup",
+  "fix": "Run top-margin cleanup only when graphics is active",
+  "before": [
+    {
+      "variant": "MAP",
+      "first_glyph_equals_second_row": {
+        "kanji80": false,
+        "kanji40": false
+      },
+      "saved_bytes_match": true,
+      "sha256": "25418a13b1d2470be5a86b963f0e380b16bd44dc6d74cd9e8b0ffe40f66743d4"
+    },
+    {
+      "variant": "INT",
+      "first_glyph_equals_second_row": {
+        "kanji80": false,
+        "kanji40": false
+      },
+      "saved_bytes_match": true,
+      "sha256": "dfa2673e7e5dd63e133766b80d7c4d554d71cf667153c87acd29fe8107bce275"
+    },
+    {
+      "variant": "EXT",
+      "first_glyph_equals_second_row": {
+        "kanji80": false,
+        "kanji40": false
+      },
+      "saved_bytes_match": true,
+      "sha256": "c84692f65dec04f9d74ae55eee6888393e6acd29f68db4f652844ce994ea4215"
+    }
+  ],
+  "after": [
+    {
+      "variant": "MAP",
+      "first_glyph_equals_second_row": {
+        "kanji80": true,
+        "kanji40": true
+      },
+      "saved_bytes_match": true,
+      "sha256": "a6d3308cf6750d0874dcc479af1126d7720dd93a4f2407799c4100ae9c4c6e69"
+    },
+    {
+      "variant": "INT",
+      "first_glyph_equals_second_row": {
+        "kanji80": true,
+        "kanji40": true
+      },
+      "saved_bytes_match": true,
+      "sha256": "e2e4752dfa47f4ea85431624658b67064e750e710350c9badf871c20cc9464ba"
+    },
+    {
+      "variant": "EXT",
+      "first_glyph_equals_second_row": {
+        "kanji80": true,
+        "kanji40": true
+      },
+      "saved_bytes_match": true,
+      "sha256": "dd3cc7b51c29ef3f86b00ff3991e74ef6580e80a0d01755682761889b65e6a7e"
+    }
+  ],
+  "bluemSX": {
+    "variant": "MAP",
+    "mode_roundtrip_pixels_match": true,
+    "saved_bytes_match": true,
+    "dos_commands_after_wq_and_q": true,
+    "sha256": "a6d3308cf6750d0874dcc479af1126d7720dd93a4f2407799c4100ae9c4c6e69"
+  },
+  "normal_regression": [
+    {
+      "variant": "MAP",
+      "case": "exchange",
+      "saved_bytes_match": true,
+      "sha256": "a6d3308cf6750d0874dcc479af1126d7720dd93a4f2407799c4100ae9c4c6e69"
+    }
+  ],
+  "r800_mode80_before": [
+    {
+      "variant": "MAP",
+      "cpu": "r800",
+      "display": "80",
+      "startup_ms": 1200.4351111663602,
+      "sha256": "5956ee4ec0e30e25351899fee0308d19a365e9ac1db821f9a70d2366bdfbbaf3",
+      "cpu_mean_ms": 61.06711886566588,
+      "display_mean_ms": 182.47434380626615,
+      "insert_mean_ms": 36.51756769631452,
+      "backspace_mean_ms": 33.531251876984314,
+      "lines_mean_ms": 37.08549260130173,
+      "move_mean_ms": 37.83826443591843,
+      "numbers_mean_ms": 117.82160861226801,
+      "exit_mean_ms": 33.37523810055861
+    }
+  ],
+  "r800_mode80_after_kanji_roundtrip": [
+    {
+      "variant": "MAP",
+      "cpu": "r800",
+      "display": "80",
+      "startup_ms": 1200.8160255004477,
+      "sha256": "a6d3308cf6750d0874dcc479af1126d7720dd93a4f2407799c4100ae9c4c6e69",
+      "cpu_mean_ms": 61.07689664468552,
+      "display_mean_ms": 182.5330104803822,
+      "kanji_roundtrip_mean_ms": 195.5148928544987,
+      "insert_mean_ms": 36.50456798326409,
+      "backspace_mean_ms": 33.53137759128586,
+      "lines_mean_ms": 37.08560596685557,
+      "move_mean_ms": 37.83610501908493,
+      "numbers_mean_ms": 117.929012858711,
+      "exit_mean_ms": 32.95362958141131
+    }
+  ],
+  "physical_hardware_tested": false,
+  "deployed_common_runtime_test": [
+    {
+      "variant": "MAP",
+      "first_glyph_equals_second_row": {
+        "kanji80": true,
+        "kanji40": true
+      },
+      "saved_bytes_match": true,
+      "sha256": "a6d3308cf6750d0874dcc479af1126d7720dd93a4f2407799c4100ae9c4c6e69"
+    }
+  ],
+  "daily_disks": [
+    {
+      "disk": "outputs\\blueMSX-vimSX\\9EX\\VIMSX.DSK",
+      "programs": [
+        "VIINT.COM"
+      ],
+      "other_files_unchanged": true
+    },
+    {
+      "disk": "outputs\\blueMSX-vimSX\\9IN\\VIMSX.DSK",
+      "programs": [
+        "VIINT.COM"
+      ],
+      "other_files_unchanged": true
+    },
+    {
+      "disk": "outputs\\blueMSX-vimSX\\MAP\\VIMSX.DSK",
+      "programs": [
+        "VIINT.COM",
+        "VIMAP.COM"
+      ],
+      "other_files_unchanged": true
+    }
+  ]
+}

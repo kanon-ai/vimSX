@@ -2,7 +2,9 @@
 
 MSX-DOS2向けの小型Vi風テキストエディタです。通常のマッパRAMを使う版と、V9968の4MiB VRAM・描画機能を使う版の2タイプで、英数字・Shift-JISの文章やソースファイルを編集します。独立した実装であり、Vim本体の移植や完全互換版ではありません。
 
-2026-11-23更新：表示幅ぴったりの行で余分な空白行が出る問題と、V9968版で画面モードを切り替えると長文データが化ける問題を修正しました。MODE80対応初版のV9968版をお使いの場合は、COMファイルを今回の版へ差し替えてください。検証内容は [VALIDATION.md](docs/VALIDATION.md) を参照してください。
+2026-11-23更新：通常版・従来版のMODE80側の漢字表示、区切り線の幅・位置、漢字画面から終了した際のDOS桁数復元を修正しました。表示幅ぴったりの行の折り返し修正と、V9968の画面切替時の長文データ破損修正も含みます。検証内容は [VALIDATION.md](docs/VALIDATION.md) を参照してください。
+
+追加修正：KANJIへ切り替えた際の先頭文字欠けを修正し、通常版・従来版の不要な行末消去を削減しました。通常版MODE80の連続入力の平均処理時間は、エミュレータ内時間でZ80が129→104ms、R800が36.5→24.7msに短縮しています。実機測定ではありません。詳細は [性能・検証記録](docs/PERFORMANCE-20261123-ja.md) を参照してください。
 
 ## 動作環境と起動
 
@@ -50,9 +52,11 @@ V9968版のKANJI画面では、半角英数字・記号に専用の7×12ドッ�
 
 非turbo Rでは `:z80` はそのまま継続し、`:r800` は「R800 requires MSX turbo R」と表示して編集を継続します。
 
-コロンコマンドと検索はEnterで実行します。ASCIIは起動時のDOSの桁数を引き継ぎ、40桁ならSCREEN 5（256×212）、80桁ならSCREEN 7（512×212）のカラー画面を使用します。どちらも25行構成（本文23行、区切り、状態・コマンド行）です。`:mode40` / `:mode80`（`:mode 40` / `:mode 80`も可）で編集中に切り替えられます。`:ascii` は最後に選択したASCIIの桁数へ戻ります。通常版のKANJI画面は漢字ドライバに従います。V9968版のKANJI画面はFILを使う512×424、60半角桁（30全角桁）・本文23行です。漢字ROMの16×16ドットを省略せず描画します。日本語変換はKANJIのINSERT状態でMSX-JEを使用します。Ctrl+Spaceで変換入力を開始し、Spaceで候補、Enterで確定、Ctrl+Spaceで終了します。ホストWindowsのIMEではありません。
+コロンコマンドと検索はEnterで実行します。ASCIIは起動時のDOSの桁数を引き継ぎ、40桁ならSCREEN 5（256×212）、80桁ならSCREEN 7（512×212）のカラー画面を使用します。どちらも25行構成（本文23行、区切り、状態・コマンド行）です。`:mode40` / `:mode80`（`:mode 40` / `:mode 80`も可）で編集中に切り替えられます。`:ascii` は最後に選択したASCIIの桁数へ戻ります。通常版・従来版のKANJI画面は、40桁側では256×212（本文31半角桁×10行）、80桁側では512×424の標準インターレース（本文63半角桁×21行）で、漢字ドライバの字体を使用します。V9968版のKANJI画面はFILを使う512×424、60半角桁（30全角桁）・本文23行です。漢字ROMの16×16ドットを省略せず描画します。日本語変換はKANJIのINSERT状態でMSX-JEを使用します。Ctrl+Spaceで変換入力を開始し、Spaceで候補、Enterで確定、Ctrl+Spaceで終了します。ホストWindowsのIMEではありません。
 
 操作の詳細は [コマンド一覧](docs/COMMANDS-ja.txt) を参照してください。
+
+通常版で高解像度のKANJI画面にするには、`:mode80`、続いて`:kanji`を実行します。現在の`:mode40` / `:mode80`はASCIIへ切り替わるため、KANJIを続ける場合は再度`:kanji`が必要です。KANJIの本文幅は半角63桁相当（全角最大31文字）で、ASCIIの80桁とは異なります。
 
 ## メモリの使い方
 
@@ -103,6 +107,8 @@ Windowsでは `--sdcc "C:\path\to\sdcc\bin\sdcc.exe"` と指定できます。�
 vimSXの独自コード・ドキュメントは [MIT](LICENSE) です。SDCCランタイムの部分はそれぞれの原ライセンス（GPL v2以降＋リンク例外）に従います。MSX、Vimなどの名称は互換性・由来の説明に使用しており、各プロジェクト・権利者による公式製品や承認を示しません。
 
 ## English
+
+The latest update fixes first-character clipping when entering DOS Kanji mode and reduces redundant row-tail clearing in the mapper and legacy display builds. In the mapper MODE80 benchmark, average input processing fell from 129 to 104 ms on Z80 and from 36.5 to 24.7 ms on R800 (emulated time, not physical-hardware measurements). Native VI9IN/VI9EX binaries are unchanged by this optimization. For the mapper's wide Kanji layout, run `:mode80` followed by `:kanji`; width commands currently return to ASCII. Wide Kanji provides 63 half-width text columns, not 80.
 
 The 2026-11-23 correction fixes extra blank rows after exactly full-width lines and VRAM document corruption across display-mode changes. Replace the previous MODE80 V9968 binaries with this build; see [validation](docs/VALIDATION.md).
 
