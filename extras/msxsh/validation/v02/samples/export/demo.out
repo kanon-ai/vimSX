@@ -1,0 +1,10 @@
+=== MSXSH demo ===
+Current directory:
+A:/
+Hello MSX!
+Success branch
+Failure branch
+1:apple banana
+Pipeline status: 0
+No-match status: 1
+=== Done ===

@@ -1,0 +1,17 @@
+CLI
+MSXSH 0.2 - experimental bash-like shell; help for limits
+A:/$ echo editXD Dd
+editd
+A:/$ Kecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editdDDDDDDDDDDKecho editd
+editd
+A:/$ history
+1 echo editd
+2 history
+A:/$ export TEST=interactive
+A:/$ ls -w
+ALPHA.TXT     COMMAND2.COM  MSXDOS2.SYS   VERSION.OUT
+BASIC.OUT     LONG.OUT      MSXSH.COM     WIDE.OUT
+BETA.TXT      LS.COM        TRYLS.BAT     ZERO.TXT
+A:/$ echo $TEST
+interactive
+A:/$ exit

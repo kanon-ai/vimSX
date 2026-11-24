@@ -1,0 +1,5 @@
+{
+  "DEMO.OUT": "=== MSXSH demo ===\r\nCurrent directory:\r\nA:/\r\nHello MSX!\r\nSuccess branch\r\nFailure branch\r\n1:apple banana\r\nPipeline status: 0\r\nNo-match status: 1\r\n=== Done ===\r\n",
+  "CONTROL.OUT": "Hello MSX!\r\nFruit: apple\r\nSpecial: banana\r\nFruit: cherry\r\napple banana\r\nFound: apple\r\nNot found: orange\r\nMode: sample\r\n",
+  "CLI.OUT": "a\r\nb\r\n"
+}

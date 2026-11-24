@@ -101,6 +101,14 @@ MSX-DOS2で `ls`・`ls -l`・`ls -w` を使える [LSコマンド](extras/ls/REA
 
 GNU版の完全互換ではありません。openMSXの特定のDOS2環境で49ケースを確認しましたが、実機や他環境での動作・安全性は保証しません。[使い方・制限・免責](extras/search/README.md)と[検証範囲](extras/search/VALIDATION.md)を確認してください。
 
+## おまけ：MSXSHでシェルとスクリプト遊び
+
+MSX-DOS2 用の bash 風シェル [MSXSH 0.2](extras/msxsh/README.md) を追加しました。`if / elif / else`、`for`、変数代入・`export / unset`、`test / [ ... ]` と、最大 4KB のマッパ RAM パイプを使えます。GNU Bash の移植や完全互換ではなく、vimSX とは独立して動作します。
+
+[MSXSH.COM](extras/msxsh/MSXSH.COM) / [ソース・サンプル・検証記録付き ZIP](extras/msxsh/MSXSH-0.2.zip) / [スクリプト構文ガイド](extras/msxsh/SYNTAX-ja.md)
+
+**Linux ターミナルの気分を味わうジョーク／実験用のおまけで、実用性も安全性も不確定です。** 破棄してよいディスクのコピーやエミュレータで試してください。openMSX の特定の DOS2 環境で既存機能を含む115ケースなどを確認していますが、実機・他環境での動作やデータの安全性は保証しません。[制限と免責](extras/msxsh/README.md#免責)、[検証範囲](extras/msxsh/VALIDATION.md)をご確認ください。
+
 ## ビルド
 
 Python 3.10以降とZ80対応SDCCを用意してください。検証済みは **SDCC 4.6.0 #16555** です。

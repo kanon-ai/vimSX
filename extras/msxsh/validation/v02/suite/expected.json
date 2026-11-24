@@ -1,0 +1,692 @@
+[
+  {
+    "name": "echo",
+    "cmd": "echo hello",
+    "out": "hello\r\n",
+    "code": 0
+  },
+  {
+    "name": "quotes",
+    "cmd": "echo 'a b' \"c d\" e\\ f",
+    "out": "a b c d e f\r\n",
+    "code": 0
+  },
+  {
+    "name": "env",
+    "cmd": "export TEST=alive; echo $TEST ${TEST}; echo '$TEST'",
+    "out": "alive alive\r\n$TEST\r\n",
+    "code": 0
+  },
+  {
+    "name": "unset",
+    "cmd": "unset TEST; echo \"${TEST}end\"",
+    "out": "end\r\n",
+    "code": 0
+  },
+  {
+    "name": "condition",
+    "cmd": "false && echo BAD || echo OK; true || echo BAD; true && echo YES",
+    "out": "OK\r\nYES\r\n",
+    "code": 0
+  },
+  {
+    "name": "ret",
+    "cmd": "ret",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "seven",
+    "cmd": "seven",
+    "out": "",
+    "code": 7
+  },
+  {
+    "name": "jump",
+    "cmd": "jump",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "restore",
+    "cmd": "export TEST=preserved; wipe; echo $TEST; pwd",
+    "out": "preserved\r\nA:/\r\n",
+    "code": 0
+  },
+  {
+    "name": "pipe2",
+    "cmd": "echo alpha | grep alpha",
+    "out": "alpha\r\n",
+    "code": 0
+  },
+  {
+    "name": "pipe3",
+    "cmd": "echo alpha | grep alpha | grep -n alpha",
+    "out": "1:alpha\r\n",
+    "code": 0
+  },
+  {
+    "name": "laststatus",
+    "cmd": "echo alpha | grep NONE",
+    "out": "",
+    "code": 1
+  },
+  {
+    "name": "empty",
+    "cmd": "false | grep alpha",
+    "out": "",
+    "code": 1
+  },
+  {
+    "name": "boundary",
+    "cmd": "out4k | copy >EXACT.OUT",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "boundary3",
+    "cmd": "out4k | copy | copy >EXACT3.OUT",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "overflow",
+    "cmd": "over | copy >MUSTNOT.OUT",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "recovery",
+    "cmd": "echo recovered | copy",
+    "out": "recovered\r\n",
+    "code": 0
+  },
+  {
+    "name": "legacy",
+    "cmd": "legacy | copy",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "dup",
+    "cmd": "dup | copy",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "close",
+    "cmd": "close | copy",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "write",
+    "cmd": "echo first >FIRST.TXT; echo second >>FIRST.TXT; copy <FIRST.TXT",
+    "out": "first\r\nsecond\r\n",
+    "code": 0
+  },
+  {
+    "name": "externalfile",
+    "cmd": "grep alpha T/ONE.TXT >MATCH.TXT; copy <MATCH.TXT",
+    "out": "alpha\r\nalpha beta\r\n",
+    "code": 0
+  },
+  {
+    "name": "inputoverride",
+    "cmd": "echo ignore | copy <T/ONE.TXT",
+    "out": "alpha\r\nBeta\r\nalpha beta\r\n",
+    "code": 0
+  },
+  {
+    "name": "outputoverride",
+    "cmd": "echo saved >OVERRIDE.TXT | grep alpha",
+    "out": "",
+    "code": 1
+  },
+  {
+    "name": "missinginput",
+    "cmd": "echo BAD <ABSENT.TXT",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "missingoutput",
+    "cmd": "echo BAD >ABSENT/FAIL.TXT",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "aftererrors",
+    "cmd": "echo still-alive",
+    "out": "still-alive\r\n",
+    "code": 0
+  },
+  {
+    "name": "cwd",
+    "cmd": "cd T/SUB; pwd; cd ../..; pwd",
+    "out": "A:/T/SUB\r\nA:/\r\n",
+    "code": 0
+  },
+  {
+    "name": "path",
+    "cmd": "export PATH=A:/BIN; cd T; seven",
+    "out": "",
+    "code": 7
+  },
+  {
+    "name": "back",
+    "cmd": "cd /; pwd",
+    "out": "A:/\r\n",
+    "code": 0
+  },
+  {
+    "name": "recursive",
+    "cmd": "grep -rh alpha T",
+    "out": "alpha\r\nalpha beta\r\nalpha child\r\n",
+    "code": 0
+  },
+  {
+    "name": "find",
+    "cmd": "find T -type f -name CHILD.TXT | grep CHILD",
+    "out": "T\\SUB\\CHILD.TXT\r\n",
+    "code": 0
+  },
+  {
+    "name": "ls",
+    "cmd": "ls T/*.TXT | grep ONE.TXT",
+    "out": "ONE.TXT\r\n",
+    "code": 0
+  },
+  {
+    "name": "lslong",
+    "cmd": "ls -l T/*.TXT | grep -c ONE.TXT",
+    "out": "1\r\n",
+    "code": 0
+  },
+  {
+    "name": "lswide",
+    "cmd": "ls -w T/*.TXT | grep -c ONE.TXT",
+    "out": "1\r\n",
+    "code": 0
+  },
+  {
+    "name": "missing",
+    "cmd": "NOSUCH",
+    "out": "",
+    "code": 127
+  },
+  {
+    "name": "badext",
+    "cmd": "BAD.BIN",
+    "out": "",
+    "code": 126
+  },
+  {
+    "name": "emptycom",
+    "cmd": "ZERO.COM",
+    "out": "",
+    "code": 126
+  },
+  {
+    "name": "nested",
+    "cmd": "msxsh",
+    "out": "",
+    "code": 126
+  },
+  {
+    "name": "syntax",
+    "cmd": "echo \"unclosed",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "background",
+    "cmd": "echo BAD & echo BAD",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "substitution",
+    "cmd": "echo $(pwd)",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "exitbad",
+    "cmd": "exit 256",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "repeat",
+    "cmd": "ret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\nret\necho repeats-ok",
+    "out": "repeats-ok\r\n",
+    "code": 0
+  },
+  {
+    "name": "freebefore",
+    "cmd": "free >BEFORE.BIN",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "release",
+    "cmd": "alloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nalloc\nfree >AFTER.BIN",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "statepipe",
+    "cmd": "exit | copy",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_assign",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nX=hello; Y=\"two words\"; echo \"$X:${Y}\"",
+    "out": "hello:two words\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_localchild",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nSHVAR=secret; show; echo after; echo $SHVAR",
+    "out": "after\r\nsecret\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_exportchild",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nSHVAR=public; export SHVAR; show; echo",
+    "out": "public\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_exportupdate",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nexport SHVAR=old; SHVAR=new; show; echo",
+    "out": "new\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_unset",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nexport SHVAR=gone; unset SHVAR; show; echo \"${SHVAR}empty\"",
+    "out": "empty\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_inherit",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nexport SHVAR=old; unset X; SHVAR=new; show; echo",
+    "out": "new\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_varsrestore",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nX=alive; wipe; echo $X",
+    "out": "alive\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_true",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif true; then echo yes; else echo BAD; fi",
+    "out": "yes\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_false",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif false; then echo BAD; else echo no; fi",
+    "out": "no\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_noelse",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif false; then echo BAD; fi",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_elif",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif false; then echo BAD; elif true; then echo middle; else echo BAD; fi",
+    "out": "middle\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_elifelse",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif false; then echo BAD; elif false; then echo BAD; else echo end; fi",
+    "out": "end\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_multiline",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif true\nthen\n echo yes\nelse\n echo BAD\nfi",
+    "out": "yes\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_condlist",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif false; true; then echo last; fi",
+    "out": "last\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_nested",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif true; then if false; then echo BAD; else echo nested; fi; fi",
+    "out": "nested\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_skip",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif false; then export SHVAR=BAD; over | copy; else echo safe; fi; echo \"${SHVAR}empty\"",
+    "out": "safe\r\nempty\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_command",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif grep alpha T/ONE.TXT; then echo found; fi",
+    "out": "alpha\r\nalpha beta\r\nfound\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_pipecond",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif echo x | grep x; then echo yes; fi",
+    "out": "x\r\nyes\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_bodycode",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif true; then seven; fi",
+    "out": "",
+    "code": 7
+  },
+  {
+    "name": "ctl_for",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a b c; do echo $i; done",
+    "out": "a\r\nb\r\nc\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_forlines",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in one \"two words\"\ndo\n echo \"$i\"\ndone",
+    "out": "one\r\ntwo words\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_forempty",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in; do echo BAD; done",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_forlast",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a b; do seven; done",
+    "out": "",
+    "code": 7
+  },
+  {
+    "name": "ctl_forrestore",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a b; do wipe; echo $i; done",
+    "out": "a\r\nb\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_forif",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a b; do if [ \"$i\" = a ]; then echo A; else echo B; fi; done",
+    "out": "A\r\nB\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_nestedfor",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a b; do for j in 1 2; do echo $i$j; done; done",
+    "out": "a1\r\na2\r\nb1\r\nb2\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_expandonce",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nX=old; for i in \"$X\" \"$X\"; do X=new; echo $i; done; echo $X",
+    "out": "old\r\nold\r\nnew\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_emptyitem",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in \"\" x; do echo \"<$i>\"; done",
+    "out": "<>\r\n<x>\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_break",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a b c; do echo $i; break; echo BAD; done; echo done",
+    "out": "a\r\ndone\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_continue",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a b; do echo $i; continue; echo BAD; done",
+    "out": "a\r\nb\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_innerbreak",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a b; do for j in 1 2; do echo $i$j; break; done; done",
+    "out": "a1\r\nb1\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_condcontinue",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a b; do if [ \"$i\" = a ]; then continue; fi; echo $i; done",
+    "out": "b\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_breakoutside",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nbreak",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_continuearg",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a; do continue 2; done",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_breakpipe",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a; do break | copy; done",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_assignpipe",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nX=BAD | copy",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_prefix",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nX=BAD echo BAD",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_testempty",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\ntest",
+    "out": "",
+    "code": 1
+  },
+  {
+    "name": "ctl_testone",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\ntest x",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_testnot",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\ntest ! x",
+    "out": "",
+    "code": 1
+  },
+  {
+    "name": "ctl_testz",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ -z \"\" ]",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_testn",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ -n \"abc\" ]",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_testeq",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ abc = abc ]",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_testne",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ abc != def ]",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_testfalse",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ abc = def ]",
+    "out": "",
+    "code": 1
+  },
+  {
+    "name": "ctl_testnum",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ -32768 -lt 32767 ] && [ 2 -le 2 ] && [ 3 -ge 2 ] && [ 3 -gt 2 ] && [ 1 -ne 2 ] && [ 2 -eq 2 ]",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_testoverflow",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ 32768 -eq 1 ]",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_testbadnum",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ abc -eq 1 ]",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_testbracket",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ a = a",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_testfile",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ -f T/ONE.TXT ] && [ -d T/SUB ] && [ -e T/ONE.TXT ]",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_testmissing",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n[ -e ABSENT.TXT ]",
+    "out": "",
+    "code": 1
+  },
+  {
+    "name": "ctl_quotedkeywords",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\necho 'if' 'then' 'fi'; for i in done fi; do echo $i; done",
+    "out": "if then fi\r\ndone\r\nfi\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_comments",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nif true # condition\nthen\n # blank comment\n echo yes # trailing\nfi",
+    "out": "yes\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_badelse",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nelse echo BAD",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_depth4",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nfor i in a; do if true; then for j in b; do if true; then echo $i$j; fi; done; fi; done",
+    "out": "ab\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_varlimit",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nA=1; B=2; C=3; D=4; E=5; F=6; G=7; H=8; I=9",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_varreuse",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nA=1; B=2; C=3; D=4; E=5; F=6; G=7; H=8; unset A; I=9; echo $I",
+    "out": "9\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_badname",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\n1X=wrong",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_for512",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nX=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nY=\"$X$X\"\nfor i in \"$Y\" \"$Y\" x; do echo -n x; done; echo",
+    "out": "xxx\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_for513",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nX=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nY=\"$X$X\"\nfor i in \"$Y\" \"$Y\" xx; do echo BAD; done",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_value255",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nX=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nY=\"$X${X}a\"; test -n \"$Y\"",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_value256",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nX=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nY=\"$X$X\"",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_name31",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=ok; echo $AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "out": "ok\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_name32",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=BAD",
+    "out": "",
+    "code": 2
+  },
+  {
+    "name": "ctl_rootdir",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\ntest -d /",
+    "out": "",
+    "code": 0
+  },
+  {
+    "name": "ctl_dosinherit",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nseed; SHVAR=inner; show; echo",
+    "out": "inner\r\n",
+    "code": 0
+  },
+  {
+    "name": "ctl_forexport",
+    "cmd": "unset TEST PATH X Y i j k SHVAR A B C D E F G H I\nexport SHVAR=initial; for SHVAR in a b; do show; echo; done",
+    "out": "a\r\nb\r\n",
+    "code": 0
+  },
+  {
+    "name": "end",
+    "cmd": "echo DONE",
+    "out": "DONE\r\n",
+    "code": 0
+  }
+]

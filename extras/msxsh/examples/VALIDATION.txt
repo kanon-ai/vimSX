@@ -1,0 +1,1 @@
+2026-11-24: MSXSH 0.2, openMSX Panasonic_FS-A1ST / MSX-DOS2. DEMO.SH and CONTROL.SH exact outputs and exit codes verified; imported scripts and MSXSH.COM matched distributed bytes. See ../validation/v02/samples.

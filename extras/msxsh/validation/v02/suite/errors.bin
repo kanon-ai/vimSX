@@ -1,0 +1,29 @@
+msxsh: RAM pipe exceeds 4096 bytes; pipeline stopped
+msxsh: unsupported DOS call on RAM pipe; pipeline stopped
+msxsh: unsupported DOS call on RAM pipe; pipeline stopped
+msxsh: unsupported DOS call on RAM pipe; pipeline stopped
+msxsh: open input (DOS 215)
+msxsh: open output (DOS 214)
+msxsh: command not found
+msxsh: external programs must be .COM
+msxsh: COM empty/too large (maximum 48640 bytes)
+msxsh: nested MSXSH unsupported
+msxsh: invalid control syntax, nesting or node limit
+msxsh: invalid control syntax, nesting or node limit
+msxsh: unsupported variable/substitution syntax
+msxsh: exit requires 0..255
+msxsh: state-changing builtins unsupported in pipelines
+msxsh: break/continue require a for loop and no arguments
+msxsh: break/continue require a for loop and no arguments
+msxsh: state-changing builtins unsupported in pipelines
+msxsh: assignment unsupported in pipelines
+msxsh: command-prefix assignments unsupported
+msxsh: unsupported test expression or integer out of range
+msxsh: unsupported test expression or integer out of range
+msxsh: [ requires closing ]
+msxsh: invalid control syntax, nesting or node limit
+msxsh: at most 8 shell variables
+msxsh: invalid variable name
+msxsh: for values exceed 512 bytes
+msxsh: variable limit: name 31, value 255 bytes
+msxsh: variable limit: name 31, value 255 bytes
